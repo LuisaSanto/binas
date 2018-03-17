@@ -5,7 +5,7 @@
 
 	<!-- Please replace 'CXX' below with your C (campus) with A (Alameda) / 
 		T (Tagus); and your group number with two digits. Then delete this comment. -->
-	<groupId>org.binas.CXX</groupId>
+	<groupId>org.binas.A58</groupId>
 	<artifactId>binas-ws-cli</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -24,7 +24,7 @@
 
 		<mainclass>org.binas.ws.cli.BinasClientApp</mainclass>
 
-		<group.id>CXX</group.id>
+		<group.id>A58</group.id>
 		<uddi.url>http://localhost:9090</uddi.url>
 		<ws.name>${group.id}_Binas</ws.name>
 		<supplier.ws.name>${group.id}_Binas</supplier.ws.name>
@@ -58,12 +58,12 @@
 			</testResource>
 		</testResources>
 		<plugins>
-			<!-- plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jaxws-maven-plugin</artifactId> 
+			<plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jaxws-maven-plugin</artifactId>
 				<version>2.4.1</version> <executions> <execution> <goals> <goal>wsimport</goal> 
 				</goals> </execution> </executions> <configuration> <wsdlDirectory>${wsdl.directory}</wsdlDirectory> 
 				<wsdlFiles> <wsdlFile>${wsdl.filename}</wsdlFile> </wsdlFiles> </configuration> 
 				<dependencies> <dependency> <groupId>com.sun.xml.ws</groupId> <artifactId>jaxws-tools</artifactId> 
-				<version>2.2.10</version> </dependency> </dependencies> </plugin -->
+				<version>2.2.10</version> </dependency> </dependencies> </plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.19.1</version>
