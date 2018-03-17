@@ -1,10 +1,10 @@
-# Projeto de Sistemas Distribuídos 2017/18 #
+# Projeto de Sistemas DistribuÃ­dos 2017/18 #
 
 Grupo A58
 
 Luisa Santo, 79758, ana.santo@tecnico.ulisboa.pt
+Kevin Vos, 87823, kevindevos9542@gmail.com
 
-*(preencher com nome, número e email de membro do grupo e depois apagar esta linha)*
 
 
 -------------------------------------------------------------------------------
