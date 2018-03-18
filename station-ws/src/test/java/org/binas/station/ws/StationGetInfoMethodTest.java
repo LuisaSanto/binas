@@ -4,7 +4,7 @@ import org.binas.station.domain.Station;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StationGetInfoMethodTest {
+public class StationGetInfoMethodTest extends BaseStationIT {
 
     @Test
     public void getInfo(){
