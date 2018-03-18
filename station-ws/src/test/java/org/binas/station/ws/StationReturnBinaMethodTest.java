@@ -5,7 +5,7 @@ import org.binas.station.domain.exception.NoSlotAvailException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StationPortImplTest {
+public class StationReturnBinaMethodTest {
 
 
     @Test(expected = NoSlotAvailException.class)
