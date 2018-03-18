@@ -4,7 +4,7 @@ import org.binas.station.domain.Station;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.junit.Test;
 
-public class StationGetBinaMethodTest {
+public class StationGetBinaMethodTest extends BaseStationIT {
 
     @Test(expected = NoBinaAvailException.class)
     public void getBina(){
