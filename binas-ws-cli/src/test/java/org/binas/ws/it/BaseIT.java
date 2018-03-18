@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.binas.ws.cli.BinasClient;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.BeforeClass;
 
 
@@ -48,7 +48,7 @@ public class BaseIT {
 
 	}
 
-	@AfterClass
+	@After
 	public static void cleanup() {
 	}
 
