@@ -2,11 +2,9 @@
 
 Grupo A58
 
-Luisa Santo, 79758, ana.santo@tecnico.ulisboa.pt
+   Number    |          Name           |            Email        	    |   
+| ---------- | ----------------------- | ------------------------------ | 
+|   79758    |   Luisa Santo           |  ana.santo@tecnico.ulisboa.pt  |  
+|   87823    |   Kevin Vos             |  kevindevos9542@gmail.com      |  
+|   83517    |   Sofia Cortes Martins  |  sofia_cmartins@hotmail.com    |  
 
-Kevin Vos, 87823, kevindevos9542@gmail.com
-
-
-
--------------------------------------------------------------------------------
-**FIM**
