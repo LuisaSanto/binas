@@ -45,10 +45,12 @@ public class BinasPortImpl implements BinasPortType{
         try{
             return Binas.getInstance().activateUser(email);
         }catch(EmailExistsException e){
-            throw new EmailExists_Exception("Email Exists", new EmailExists());
+            throwEmailExists("");
         }catch(InvalidEmailException e){
-            throw new InvalidEmail_Exception("Invalid Email", new InvalidEmail());
+            throwInvalidEmail("");
         }
+
+        return null;
     }
 
 
@@ -62,10 +64,27 @@ public class BinasPortImpl implements BinasPortType{
 
     }
 
+
+    // Test control operations
+    /** Diagnostic operation to check if service is running. */
     @Override
-    public String testPing(String inputMessage){
-        return null;
+    public String testPing(String inputMessage) {
+        // If no input is received, return a default name.
+        if (inputMessage == null || inputMessage.trim().length() == 0)
+            inputMessage = "friend";
+
+        // If the station does not have a name, return a default.
+        String wsName = endpointManager.getWsName();
+        if (wsName == null || wsName.trim().length() == 0)
+            wsName = "Station";
+
+        // Build a string with a message to return.
+        StringBuilder builder = new StringBuilder();
+        builder.append("Hello ").append(inputMessage);
+        builder.append(" from ").append(wsName);
+        return builder.toString();
     }
+
 
     @Override
     public void testClear(){
@@ -80,5 +99,23 @@ public class BinasPortImpl implements BinasPortType{
     @Override
     public void testInit(int userInitialPoints) throws BadInit_Exception{
 
+    }
+
+    // Exception Helpers
+
+    /** Helper to throw a new InvalidEmail exception. */
+    private void throwInvalidEmail(final String message) throws InvalidEmail_Exception {
+        InvalidEmail faultInfo = new InvalidEmail();
+        faultInfo.message = message;
+
+        throw new InvalidEmail_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new InvalidEmail exception. */
+    private void throwEmailExists(final String message) throws EmailExists_Exception {
+        EmailExists faultInfo = new EmailExists();
+        faultInfo.message = message;
+
+        throw new EmailExists_Exception(message, faultInfo);
     }
 }
