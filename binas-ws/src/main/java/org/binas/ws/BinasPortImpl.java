@@ -12,10 +12,18 @@ import java.util.List;
         wsdlLocation = "binas.wsdl",
         name = "BinasWebService",
         portName = "BinasPort",
-        targetNamespace = "http://ws.binas.binas.org/",
+        targetNamespace = "http://ws.binas.org/",
         serviceName = "BinasService"
 )
 public class BinasPortImpl implements BinasPortType{
+    private BinasEndpointManager endpointManager;
+
+
+    public BinasPortImpl(){ }
+
+    public BinasPortImpl(BinasEndpointManager binasEndpointManager){
+        this.endpointManager = binasEndpointManager;
+    }
 
     @Override
     public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates){
