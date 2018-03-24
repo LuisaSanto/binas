@@ -1,5 +1,7 @@
 package org.binas.domain;
 
+
+/* Gestor do binas, possui funcionalidades de administracao */
 public class BinasManager {
 
 	// Singleton -------------------------------------------------------------
