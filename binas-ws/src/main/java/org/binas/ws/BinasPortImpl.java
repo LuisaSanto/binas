@@ -88,7 +88,7 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public void testClear(){
-
+        Binas.getInstance().clearUsers();
     }
 
     @Override
@@ -98,7 +98,7 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public void testInit(int userInitialPoints) throws BadInit_Exception{
-
+        Binas.getInstance().clearUsers();
     }
 
     // Exception Helpers

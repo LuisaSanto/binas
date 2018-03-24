@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.binas.ws.cli.BinasClient;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 
@@ -48,7 +49,7 @@ public class BaseIT {
 
 	}
 
-	@After
+	@AfterClass
 	public static void cleanup() {
 	}
 

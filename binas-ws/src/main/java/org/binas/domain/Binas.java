@@ -29,6 +29,7 @@ public class Binas {
 
         if(isEmailValid(email)){
             if(!userWithEmailExists(email)){
+                user.setEmail(email);
                 users.add(user);
 
                 return user;
@@ -60,5 +61,9 @@ public class Binas {
 
         return matcher.find();
 
+    }
+
+    public void clearUsers(){
+        users.clear();
     }
 }
