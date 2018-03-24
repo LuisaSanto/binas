@@ -86,10 +86,12 @@ public class Station {
 	/** Synchronized locks object before attempting to get Bina */
 	public synchronized void getBina() throws NoBinaAvailException {
 		if(getFreeDocks() == getMaxCapacity())
-			throw new NoBinaAvailException();
+            throw new NoBinaAvailException();
 		freeDocks.incrementAndGet();
 		totalGets.incrementAndGet();
 	}
+
+
 
  	// Getters -------------------------------------------------------------
  	
@@ -131,5 +133,5 @@ public class Station {
     public synchronized int getAvailableBinas() {
     	return maxCapacity - freeDocks.get();
     }
-    	
+
 }
