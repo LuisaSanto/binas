@@ -88,7 +88,7 @@ public class StationPortImpl implements StationPortType {
 	 /** Return all station variables to default values. */
 	 @Override
 	 public void testClear() {
-	    Station.getInstance().reset();
+	     Station.getInstance().reset();
 	 }
 
 	 /** Set station variables with specific values. */

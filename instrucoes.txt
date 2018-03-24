@@ -1,0 +1,8 @@
+Como correr:
+	1. Fazer generate-sources do maven na pasta raiz para chamar o wsimport da API para aplicacoes java, JAX-WS, recursivamente para todos os modulos
+	2. Correr o servidor na pasta ws-station fazendo mvn compile exec:java (compila e executa)
+	3. Correr o cliente na pasta ws-station-cl fazendo a mesma intrucao que em 2.
+
+Fizemos a seguinte modificacao ao codigo:
+	1. Adicionamos uma classe java associada ao metodo getBinas na aplicacao cliente.
+	2. Nessa classe, herdamos de BaseIT para conseguirmos comunicar com o servidor. Chamamos o metodo testInit, alterando apenas as capacidades e verificanos o metodo n vezes.

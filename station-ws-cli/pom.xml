@@ -30,7 +30,7 @@
 
 		<!-- Please replace 'CXX' below with your C (campus) with A (Alameda) / 
 			T (Tagus); and your group number with two digits. Then delete this comment. -->
-		<group.id>C58</group.id>
+		<group.id>A58</group.id>
 
 		<ws.name>${group.id}_Station${ws.i}</ws.name>
 		<ws.host>localhost</ws.host>
@@ -50,7 +50,7 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<resources>
