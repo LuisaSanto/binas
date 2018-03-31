@@ -3,6 +3,10 @@ package org.binas.ws;
 import org.binas.domain.Binas;
 import org.binas.exception.EmailExistsException;
 import org.binas.exception.InvalidEmailException;
+import org.binas.station.ws.cli.StationClient;
+import org.binas.station.ws.cli.StationClientException;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.jws.WebService;
 import java.util.List;
@@ -17,12 +21,13 @@ import java.util.List;
 )
 public class BinasPortImpl implements BinasPortType{
     private BinasEndpointManager endpointManager;
-
+    private String uddiUrl;
 
     public BinasPortImpl(){ }
 
-    public BinasPortImpl(BinasEndpointManager binasEndpointManager){
+    public BinasPortImpl(BinasEndpointManager binasEndpointManager, String uddiUrl){
         this.endpointManager = binasEndpointManager;
+        this.uddiUrl = uddiUrl;
     }
 
     @Override
@@ -32,6 +37,10 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public StationView getInfoStation(String stationId) throws InvalidStation_Exception{
+
+
+
+
         return null;
     }
 
@@ -69,6 +78,39 @@ public class BinasPortImpl implements BinasPortType{
     /** Diagnostic operation to check if service is running. */
     @Override
     public String testPing(String inputMessage) {
+        String stationBaseWsName = "A58_Station";
+        String wsName = null;
+        String result = "";
+
+
+        // testar apenas para 3 estacoes
+        for(int i = 1; i <= 3; i++){
+            wsName = stationBaseWsName + i;
+
+            StationClient stationClient = null;
+            try{
+                stationClient = new StationClient(uddiUrl, wsName);
+            } catch(StationClientException e){
+                e.printStackTrace();
+            }
+
+            try{
+                System.out.printf("Contacting UDDI at %s%n", uddiUrl);
+                UDDINaming uddiNaming = new UDDINaming(uddiUrl);
+
+                System.out.println("Binas is looking up for station in UDDI with wsName: " + wsName);
+                uddiNaming.lookup(wsName);
+
+                result += stationClient.testPing(inputMessage) + "\n";
+                System.out.println(result);
+
+            }catch(UDDINamingException e){
+                e.printStackTrace();
+                break;
+            }
+        }
+
+        /* Codigo antigo test ping para endpoints
         // If no input is received, return a default name.
         if (inputMessage == null || inputMessage.trim().length() == 0)
             inputMessage = "friend";
@@ -83,6 +125,10 @@ public class BinasPortImpl implements BinasPortType{
         builder.append("Hello ").append(inputMessage);
         builder.append(" from ").append(wsName);
         return builder.toString();
+
+        */
+
+        return result;
     }
 
 

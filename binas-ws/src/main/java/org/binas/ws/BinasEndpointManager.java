@@ -2,6 +2,15 @@ package org.binas.ws;
 
 import javax.xml.ws.Endpoint;
 import java.io.IOException;
+import java.net.PasswordAuthentication;
+import java.util.*;
+
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+
+import javax.xml.registry.*;
+import javax.xml.registry.infomodel.Organization;
+import javax.xml.registry.infomodel.Service;
+import javax.xml.registry.infomodel.ServiceBinding;
 
 /** The endpoint manager starts and registers the service. */
 public class BinasEndpointManager {
@@ -20,7 +29,7 @@ public class BinasEndpointManager {
     private String wsURL = null;
 
     /** Port implementation */
-    private BinasPortImpl portImpl = new BinasPortImpl(this);
+    private BinasPortImpl portImpl = null;
 
     /** Obtain Port implementation */
     public BinasPortType getPort() {
@@ -30,13 +39,13 @@ public class BinasEndpointManager {
     /** Web Service end point */
     private Endpoint endpoint = null;
 
-    // /** UDDI Naming instance for contacting UDDI server */
-    // private UDDINaming uddiNaming = null;
-    //
-    // /** Get UDDI Naming instance for contacting UDDI server */
-    // UDDINaming getUddiNaming() {
-    // return uddiNaming;
-    // }
+     /** UDDI Naming instance for contacting UDDI server */
+     private UDDINaming uddiNaming = null;
+
+     /** Get UDDI Naming instance for contacting UDDI server */
+     UDDINaming getUddiNaming() {
+        return uddiNaming;
+     }
 
     /** output option */
     private boolean verbose = true;
@@ -54,6 +63,8 @@ public class BinasEndpointManager {
         this.uddiURL = uddiURL;
         this.wsName = wsName;
         this.wsURL = wsURL;
+
+        portImpl = new BinasPortImpl(this, uddiURL);
     }
 
     /** constructor with provided web service URL */
@@ -118,10 +129,20 @@ public class BinasEndpointManager {
     /* UDDI */
 
     void publishToUDDI() throws Exception {
-        // TODO
+        System.out.printf("Publishing '%s' to UDDI at %s%n", wsName, uddiURL);
+        uddiNaming = new UDDINaming(uddiURL);
+        uddiNaming.rebind(wsName, wsURL);
     }
 
     void unpublishFromUDDI() {
-        // TODO
+        try {
+            if (uddiNaming != null) {
+                // delete from UDDI
+                uddiNaming.unbind(wsName);
+                System.out.printf("Deleted '%s' from UDDI%n", wsName);
+            }
+        } catch (Exception e) {
+            System.out.printf("Caught exception when deleting: %s%n", e);
+        }
     }
 }
