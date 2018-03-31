@@ -41,6 +41,18 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!-- UDDI Naming -->
+        <dependency>
+            <groupId>pt.ulisboa.tecnico.sdis</groupId>
+            <artifactId>uddi-naming</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.binas.A58</groupId>
+            <artifactId>station-ws-cli</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 	<build>
@@ -101,9 +113,9 @@
 					<killAfter>-1</killAfter>
 					<mainClass>${mainclass}</mainClass>
 					<arguments>
-						<argument>${uddi.url}</argument>
-						<argument>${ws.name}</argument>
-						<argument>${ws.url}</argument>
+                        <argument>${ws.name}</argument>
+                        <argument>${ws.url}</argument>
+                        <argument>${uddi.url}</argument>
 					</arguments>
 				</configuration>
 			</plugin>
