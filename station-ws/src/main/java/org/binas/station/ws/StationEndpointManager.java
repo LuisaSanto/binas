@@ -131,6 +131,7 @@ public class StationEndpointManager {
 	void publishToUDDI() throws Exception {
         System.out.printf("Publishing '%s' to UDDI at %s%n", wsName, uddiURL);
         uddiNaming = new UDDINaming(uddiURL);
+        System.out.println("Registering station with wsUrl = " + wsURL);
         uddiNaming.rebind(wsName, wsURL);
     }
 

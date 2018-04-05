@@ -1,6 +1,8 @@
 package org.binas.station.ws.cli;
 
 import org.binas.station.ws.*;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.xml.ws.BindingProvider;
 import java.util.Map;
@@ -35,7 +37,7 @@ public class StationClient implements StationPortType {
 	}
 
 	/** output option **/
-	private boolean verbose = false;
+	private boolean verbose = true;
 
 	public boolean isVerbose() {
 		return verbose;
@@ -45,32 +47,56 @@ public class StationClient implements StationPortType {
 		this.verbose = verbose;
 	}
 
-	/** constructor with provided web service URL */
+	/** constructor with provided web service URL , USE WHEN WE HAVE THE WSURL FROM UDDI or other means*/
 	public StationClient(String wsURL) throws StationClientException {
 		this.wsURL = wsURL;
 		createStub();
 	}
 
-	/** constructor with provided UDDI location and name */
+	/** constructor with provided UDDI location and name, USE WHEN WE DONT KNOW THE WSURL */
 	public StationClient(String uddiURL, String wsName) throws StationClientException {
+	    System.out.println("0");
 		this.uddiURL = uddiURL;
 		this.wsName = wsName;
+
+		System.out.println("1");
 		uddiLookup();
+		System.out.println("2");
 		createStub();
 	}
 
 	/** UDDI lookup */
 	private void uddiLookup() throws StationClientException {
-		// TODO
+	    System.out.println("StationClient looking up UDDI for wsURl");
+
+        try{
+            System.out.printf("Client contacting UDDI at %s%n", uddiURL);
+            UDDINaming uddiNaming = new UDDINaming(uddiURL);
+
+            System.out.println("Client is looking up for station in UDDI with wsName: " + wsName);
+            String endpointAddress = uddiNaming.lookup(wsName);
+
+            this.wsURL = endpointAddress;
+
+            if (endpointAddress == null) {
+                System.out.println("Not found!");
+                return;
+            } else {
+                System.out.printf("Found %s%n", endpointAddress);
+            }
+        }catch(UDDINamingException e){
+            e.printStackTrace();
+        }
 	}
 
 
 	/** Stub creation and configuration */
 	private void createStub() {
 		 if (verbose)
-		 System.out.println("Creating stub ...");
+		    System.out.println("Creating stub ...");
 		 service = new StationService();
 		 port = service.getStationPort();
+		 System.out.println("creating client stub : port = " + port);
 
 		 if (wsURL != null) {
 			 if (verbose)

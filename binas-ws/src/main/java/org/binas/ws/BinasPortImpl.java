@@ -90,24 +90,14 @@ public class BinasPortImpl implements BinasPortType{
             StationClient stationClient = null;
             try{
                 stationClient = new StationClient(uddiUrl, wsName);
+                System.out.println(stationClient.getInfo());
+
             } catch(StationClientException e){
                 e.printStackTrace();
             }
 
-            try{
-                System.out.printf("Contacting UDDI at %s%n", uddiUrl);
-                UDDINaming uddiNaming = new UDDINaming(uddiUrl);
-
-                System.out.println("Binas is looking up for station in UDDI with wsName: " + wsName);
-                uddiNaming.lookup(wsName);
-
-                result += stationClient.testPing(inputMessage) + "\n";
-                System.out.println(result);
-
-            }catch(UDDINamingException e){
-                e.printStackTrace();
-                break;
-            }
+            result += stationClient.testPing(inputMessage) + "\n";
+            System.out.println(result);
         }
 
         /* Codigo antigo test ping para endpoints
