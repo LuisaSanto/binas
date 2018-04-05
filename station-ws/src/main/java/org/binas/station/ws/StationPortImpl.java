@@ -69,6 +69,8 @@ public class StationPortImpl implements StationPortType {
 	 /** Diagnostic operation to check if service is running. */
 	 @Override
 	 public String testPing(String inputMessage) {
+	     System.out.println("test ping in station executed with input message = " + inputMessage);
+
          // If no input is received, return a default name.
          if (inputMessage == null || inputMessage.trim().length() == 0)
             inputMessage = "friend";
