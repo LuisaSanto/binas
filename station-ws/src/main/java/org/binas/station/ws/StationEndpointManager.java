@@ -3,13 +3,6 @@ package org.binas.station.ws;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 import java.io.IOException;
-import java.net.PasswordAuthentication;
-import java.util.*;
-
-import javax.xml.registry.*;
-import javax.xml.registry.infomodel.Organization;
-import javax.xml.registry.infomodel.Service;
-import javax.xml.registry.infomodel.ServiceBinding;
 import javax.xml.ws.Endpoint;
 
 /** The endpoint manager starts and registers the service. */
@@ -87,7 +80,6 @@ public class StationEndpointManager {
 			endpoint = null;
 			if (verbose) {
 				System.out.printf("Caught exception when starting: %s%n", e);
-				e.printStackTrace();
 			}
 			throw e;
 		}

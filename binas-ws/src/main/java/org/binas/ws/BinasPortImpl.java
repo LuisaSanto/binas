@@ -90,34 +90,13 @@ public class BinasPortImpl implements BinasPortType{
             StationClient stationClient = null;
             try{
                 stationClient = new StationClient(uddiUrl, wsName);
-                System.out.println(stationClient.getInfo());
 
             } catch(StationClientException e){
-                e.printStackTrace();
+                System.out.println("Problem creating StationClient");
             }
 
             result += stationClient.testPing(inputMessage) + "\n";
-            System.out.println(result);
         }
-
-        /* Codigo antigo test ping para endpoints
-        // If no input is received, return a default name.
-        if (inputMessage == null || inputMessage.trim().length() == 0)
-            inputMessage = "friend";
-
-        // If the station does not have a name, return a default.
-        String wsName = endpointManager.getWsName();
-        if (wsName == null || wsName.trim().length() == 0)
-            wsName = "Station";
-
-        // Build a string with a message to return.
-        StringBuilder builder = new StringBuilder();
-        builder.append("Hello ").append(inputMessage);
-        builder.append(" from ").append(wsName);
-        return builder.toString();
-
-        */
-
         return result;
     }
 

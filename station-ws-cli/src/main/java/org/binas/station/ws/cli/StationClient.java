@@ -55,13 +55,10 @@ public class StationClient implements StationPortType {
 
 	/** constructor with provided UDDI location and name, USE WHEN WE DONT KNOW THE WSURL */
 	public StationClient(String uddiURL, String wsName) throws StationClientException {
-	    System.out.println("0");
 		this.uddiURL = uddiURL;
 		this.wsName = wsName;
 
-		System.out.println("1");
 		uddiLookup();
-		System.out.println("2");
 		createStub();
 	}
 
@@ -85,7 +82,7 @@ public class StationClient implements StationPortType {
                 System.out.printf("Found %s%n", endpointAddress);
             }
         }catch(UDDINamingException e){
-            e.printStackTrace();
+            System.out.println("StationClient was not able to contact station");
         }
 	}
 
@@ -96,7 +93,6 @@ public class StationClient implements StationPortType {
 		    System.out.println("Creating stub ...");
 		 service = new StationService();
 		 port = service.getStationPort();
-		 System.out.println("creating client stub : port = " + port);
 
 		 if (wsURL != null) {
 			 if (verbose)
