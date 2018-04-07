@@ -87,7 +87,6 @@ public class BinasEndpointManager {
             endpoint = null;
             if (verbose) {
                 System.out.printf("Caught exception when starting: %s%n", e);
-                e.printStackTrace();
             }
             throw e;
         }
