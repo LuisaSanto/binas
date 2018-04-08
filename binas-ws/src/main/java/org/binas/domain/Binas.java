@@ -2,6 +2,7 @@ package org.binas.domain;
 
 import org.binas.exception.EmailExistsException;
 import org.binas.exception.InvalidEmailException;
+import org.binas.ws.UserNotExists;
 import org.binas.ws.UserView;
 
 import java.util.Vector;
@@ -21,6 +22,15 @@ public class Binas {
 
     public static Binas getInstance(){
         return SingletonHolder.INSTANCE;
+    }
+
+    public synchronized UserView getUser(String email) throws UserNotExists {
+        for(UserView user : users){
+            if(user.getEmail().equals(email)){
+                return user;
+            }
+        }
+        throw new UserNotExists();
     }
 
     // activate a user by checking if the email is valid and then adding to the vector
@@ -43,7 +53,7 @@ public class Binas {
     }
 
     // Check if an user exists (is active ) with specified email
-    private synchronized boolean userWithEmailExists(String email){
+    public synchronized boolean userWithEmailExists(String email){
         for(UserView user : users){
             if(user.getEmail().equals(email)){
                 return true;

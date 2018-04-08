@@ -33,6 +33,45 @@ public class BinasPortImpl implements BinasPortType{
         this.uddiUrl = uddiUrl;
     }
 
+    public List<StationView> getStations(){
+        try{
+            UDDINaming uddiNaming = new UDDINaming(uddiUrl);
+
+            // get all station records in UDDI , using * wildcard
+            Collection<UDDIRecord> UDDIrecords = uddiNaming.listRecords("A58_Station*");
+
+            Vector<String> urls = new Vector<>();
+            for(UDDIRecord uddiRecord : UDDIrecords){
+                urls.add(uddiRecord.getUrl());
+            }
+
+            Vector<StationView> allStationViews = new Vector<>();
+            StationClient stationClient = null;
+            for(int i = 0; i < urls.size(); i++){
+                stationClient = new StationClient(urls.elementAt(i));
+
+                // TODO piazza question, conversion between 2 almost identical StationView
+                allStationViews.addElement((StationView) stationClient.getInfo());
+            }
+            return allStationViews;
+        } catch (UDDINamingException e) {
+            System.out.println("Problem reaching UDDI from Binas");
+        } catch (StationClientException e) {
+            System.out.println("Problem creating StationClient");
+        }
+        return null;
+    }
+
+    public StationView getStation(String stationId) throws InvalidStation_Exception{
+        for(StationView station : getStations()){
+            if(station.getId().equals(stationId)){
+                return station;
+            }
+            else throwInvalidStation("");
+        }
+        return null;
+    }
+
     @Override
     public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates){
         if(numberOfStations < 1 || coordinates == null){
@@ -101,18 +140,17 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public StationView getInfoStation(String stationId) throws InvalidStation_Exception{
-
-
-
-
-
-
         return null;
     }
 
     @Override
-    public int getCredit(String email) throws UserNotExists_Exception{
-        return 0;
+    public int getCredit(String email) throws UserNotExists_Exception {
+        try {
+            return Binas.getInstance().getUser(email).getCredit();
+        } catch (UserNotExists userNotExists) {
+            throwUserNotExists("");
+        }
+        return Integer.parseInt(null);
     }
 
     @Override
@@ -130,12 +168,46 @@ public class BinasPortImpl implements BinasPortType{
 
 
     @Override
-    public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception, NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception{
+    public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception,
+            NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception{
+        try{
+            StationView station = getStation(stationId);
+            if(station != null){
 
+                UserView user = Binas.getInstance().getUser(email);
+                int credit = getCredit(email);
+
+                if (!user.isHasBina()){
+                    if (credit > 0) {
+                        user.setCredit(credit - 1);
+                        //TODO Station.getBina();
+                    }
+                    else throwNoCredit("");
+                }
+                else throwAlreadyHasBina("");
+            }
+        } catch (UserNotExists userNotExists) {
+            throwUserNotExists("");
+        }
     }
 
     @Override
-    public void returnBina(String stationId, String email) throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception{
+    public void returnBina(String stationId, String email) throws FullStation_Exception, InvalidStation_Exception,
+            NoBinaRented_Exception, UserNotExists_Exception{
+        try{
+            StationView station = getStation(stationId);
+
+            if(station != null){
+                UserView user = Binas.getInstance().getUser(email);
+
+                if(user.isHasBina()){
+                    //TODO Station.returnBina()
+                }
+                else throwNoBinaRented("");
+            }
+        } catch (UserNotExists userNotExists) {
+            throwUserNotExists("");
+        }
 
     }
 
@@ -198,5 +270,61 @@ public class BinasPortImpl implements BinasPortType{
         faultInfo.message = message;
 
         throw new EmailExists_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new UserNotExists exception. */
+    private void throwUserNotExists(final String message) throws UserNotExists_Exception {
+        UserNotExists faultInfo = new UserNotExists();
+        faultInfo.message = message;
+
+        throw new UserNotExists_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new AlreadyHasBina exception. */
+    private void throwAlreadyHasBina(final String message) throws AlreadyHasBina_Exception {
+        AlreadyHasBina faultInfo = new AlreadyHasBina();
+        faultInfo.message = message;
+
+        throw new AlreadyHasBina_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new NoCredit exception. */
+    private void throwNoCredit(final String message) throws NoCredit_Exception {
+        NoCredit faultInfo = new NoCredit();
+        faultInfo.message = message;
+
+        throw new NoCredit_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new InvalidStation exception. */
+    private void throwInvalidStation(final String message) throws InvalidStation_Exception {
+        InvalidStation faultInfo = new InvalidStation();
+        faultInfo.message = message;
+
+        throw new InvalidStation_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new NoBinaAvail exception. */
+    private void throwNoBinaAvail(final String message) throws NoBinaAvail_Exception {
+        NoBinaAvail faultInfo = new NoBinaAvail();
+        faultInfo.message = message;
+
+        throw new NoBinaAvail_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new FullStation exception. */
+    private void throwFullStation(final String message) throws FullStation_Exception {
+        FullStation faultInfo = new FullStation();
+        faultInfo.message = message;
+
+        throw new FullStation_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new NoBinaRented exception. */
+    private void throwNoBinaRented(final String message) throws NoBinaRented_Exception {
+        NoBinaRented faultInfo = new NoBinaRented();
+        faultInfo.message = message;
+
+        throw new NoBinaRented_Exception(message, faultInfo);
     }
 }
