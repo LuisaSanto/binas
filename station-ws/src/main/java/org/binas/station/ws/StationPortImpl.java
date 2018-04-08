@@ -115,6 +115,7 @@ public class StationPortImpl implements StationPortType {
          view.setTotalReturns(station.getTotalReturns());
          view.setFreeDocks(station.getFreeDocks());
          view.setAvailableBinas(station.getAvailableBinas());
+
          return view;
 	 }
 

@@ -7,9 +7,12 @@ import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
 
 import javax.jws.WebService;
+import java.util.Collection;
 import java.util.List;
+import java.util.Vector;
 
 @WebService(
         endpointInterface = "org.binas.ws.BinasPortType",
@@ -32,11 +35,74 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates){
-        return null;
+        if(numberOfStations < 1 || coordinates == null){
+            return null;
+        }
+
+        Vector<StationView> closestKStations = new Vector<>();
+
+        try{
+            UDDINaming uddiNaming = new UDDINaming(uddiUrl);
+
+            // get all station records in UDDI , using * wildcard
+            Collection<UDDIRecord> UDDIrecords = uddiNaming.listRecords("A58_Station*");
+
+            Vector<String> urls = new Vector<>();
+            for(UDDIRecord uddiRecord : UDDIrecords){
+                urls.add(uddiRecord.getUrl());
+            }
+
+            Vector<StationView> allStationViews = new Vector<>();
+            StationClient stationClient = null;
+            for(int i = 0; i < urls.size(); i++){
+                stationClient = new StationClient(urls.elementAt(i));
+
+                // TODO piazza question, conversion between 2 almost identical StationView
+                allStationViews.addElement((StationView) stationClient.getInfo());
+            }
+
+            for(int i = 0; i < numberOfStations; i++){
+                if(allStationViews.size() == 0){
+                    break;
+                }
+
+                double lowestDistance = Double.POSITIVE_INFINITY;
+                StationView closestStation = null;
+
+                for(int j = 0 ; j < allStationViews.size(); j++){
+                    StationView stationView = allStationViews.elementAt(j);
+                    double dist = distanceBetweenCoordinates(coordinates, stationView.getCoordinate());
+
+                    if(dist < lowestDistance){
+                        lowestDistance = dist;
+                        closestStation = stationView;
+                    }
+                }
+
+                closestKStations.add(closestStation);
+                allStationViews.removeElement(closestStation);
+            }
+        } catch(UDDINamingException e){
+            System.out.println("Problem reaching UDDI from Binas");
+        } catch(StationClientException e){
+            System.out.println("Problem creating StationClient");
+        }
+
+        return closestKStations;
+    }
+
+    /* Calculate distance between 2 sets of coordinateViews */
+    private double distanceBetweenCoordinates(CoordinatesView coord1, CoordinatesView coord2){
+        double xDiff = coord1.getX() - coord2.getX();
+        double yDiff = coord1.getY() - coord2.getY();
+
+        return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
     }
 
     @Override
     public StationView getInfoStation(String stationId) throws InvalidStation_Exception{
+
+
 
 
 
