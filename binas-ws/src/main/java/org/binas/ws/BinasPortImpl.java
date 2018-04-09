@@ -7,12 +7,7 @@ import org.binas.exception.InvalidEmailException;
 import org.binas.exception.UserNotExistsException;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
-
 import javax.jws.WebService;
-import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -35,17 +30,6 @@ public class BinasPortImpl implements BinasPortType{
         this.uddiUrl = uddiUrl;
     }
 
-
-    private StationView getStation(String stationId) throws InvalidStation_Exception{
-        Vector<StationView> allStationViews = (Vector<StationView>) BinasManager.getStations(uddiUrl);
-        for(StationView station : allStationViews){
-            if(station.getId().equals(stationId)){
-                return station;
-            }
-            else throwInvalidStation("");
-        }
-        return null;
-    }
 
     @Override
     public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates){
@@ -98,7 +82,7 @@ public class BinasPortImpl implements BinasPortType{
         try {
             return Binas.getInstance().getUser(email).getCredit();
         } catch (UserNotExistsException userNotExists) {
-            throwUserNotExists("");
+            throwUserNotExists("User does not exist");
         }
         return Integer.parseInt(null);
     }
@@ -108,9 +92,9 @@ public class BinasPortImpl implements BinasPortType{
         try{
             return Binas.getInstance().activateUser(email);
         }catch(EmailExistsException e){
-            throwEmailExists("");
+            throwEmailExists("Email does not exist");
         }catch(InvalidEmailException e){
-            throwInvalidEmail("");
+            throwInvalidEmail("Invalid email");
         }
 
         return null;
@@ -121,7 +105,7 @@ public class BinasPortImpl implements BinasPortType{
     public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception,
             NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception{
         try{
-            StationView station = getStation(stationId);
+            StationView station = BinasManager.getStation(stationId, uddiUrl);
             if(station != null){
 
                 UserView user = Binas.getInstance().getUser(email);
@@ -132,12 +116,12 @@ public class BinasPortImpl implements BinasPortType{
                         user.setCredit(credit - 1);
                         //TODO Station.getBina();
                     }
-                    else throwNoCredit("");
+                    else throwNoCredit("User has no credit");
                 }
-                else throwAlreadyHasBina("");
-            }
+                else throwAlreadyHasBina("User already has bina");
+            }else throwInvalidStation("Invalid Station");
         } catch (UserNotExistsException userNotExists) {
-            throwUserNotExists("");
+            throwUserNotExists("User does not exist");
         }
     }
 
@@ -145,18 +129,18 @@ public class BinasPortImpl implements BinasPortType{
     public void returnBina(String stationId, String email) throws FullStation_Exception, InvalidStation_Exception,
             NoBinaRented_Exception, UserNotExists_Exception{
         try{
-            StationView station = getStation(stationId);
-
+            StationView station = BinasManager.getStation(stationId, uddiUrl);
             if(station != null){
                 UserView user = Binas.getInstance().getUser(email);
 
                 if(user.isHasBina()){
                     //TODO Station.returnBina()
                 }
-                else throwNoBinaRented("");
+                else throwNoBinaRented("No bina rented");
             }
+            else throwInvalidStation("Invalid Station");
         } catch (UserNotExistsException userNotExists) {
-            throwUserNotExists("");
+            throwUserNotExists("User does not exist");
         }
 
     }
