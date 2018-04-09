@@ -3,7 +3,6 @@ package org.binas.domain;
 
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
-import org.binas.ws.InvalidStation_Exception;
 import org.binas.ws.StationView;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
@@ -123,7 +122,6 @@ public class BinasManager {
         return null;
     }
 
-	
 	// TODO
 
 }
