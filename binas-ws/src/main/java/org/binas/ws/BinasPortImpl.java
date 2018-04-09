@@ -3,6 +3,7 @@ package org.binas.ws;
 import org.binas.domain.Binas;
 import org.binas.exception.EmailExistsException;
 import org.binas.exception.InvalidEmailException;
+import org.binas.exception.UserNotExistsException;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
@@ -62,7 +63,7 @@ public class BinasPortImpl implements BinasPortType{
         return null;
     }
 
-    public StationView getStation(String stationId) throws InvalidStation_Exception{
+    private StationView getStation(String stationId) throws InvalidStation_Exception{
         for(StationView station : getStations()){
             if(station.getId().equals(stationId)){
                 return station;
@@ -144,10 +145,10 @@ public class BinasPortImpl implements BinasPortType{
     }
 
     @Override
-    public int getCredit(String email) throws UserNotExists_Exception {
+    public int getCredit(String email) throws UserNotExists_Exception { //TODO HELP INVALID MAIL
         try {
             return Binas.getInstance().getUser(email).getCredit();
-        } catch (UserNotExists userNotExists) {
+        } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("");
         }
         return Integer.parseInt(null);
@@ -186,7 +187,7 @@ public class BinasPortImpl implements BinasPortType{
                 }
                 else throwAlreadyHasBina("");
             }
-        } catch (UserNotExists userNotExists) {
+        } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("");
         }
     }
@@ -205,7 +206,7 @@ public class BinasPortImpl implements BinasPortType{
                 }
                 else throwNoBinaRented("");
             }
-        } catch (UserNotExists userNotExists) {
+        } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("");
         }
 
