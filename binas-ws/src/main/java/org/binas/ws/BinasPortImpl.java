@@ -50,9 +50,27 @@ public class BinasPortImpl implements BinasPortType{
             StationClient stationClient = null;
             for(int i = 0; i < urls.size(); i++){
                 stationClient = new StationClient(urls.elementAt(i));
+                StationView temp = new StationView();
 
-                // TODO piazza question, conversion between 2 almost identical StationView
-                allStationViews.addElement((StationView) stationClient.getInfo());
+                String id = stationClient.getInfo().getId();
+                Integer x = stationClient.getInfo().getCoordinate().getX();
+                Integer y = stationClient.getInfo().getCoordinate().getY();
+                int capacity = stationClient.getInfo().getCapacity();
+                int totalGets = stationClient.getInfo().getTotalGets();
+                int totalReturns = stationClient.getInfo().getTotalReturns();
+                int availableBinas = stationClient.getInfo().getAvailableBinas();
+                int freeDocks = stationClient.getInfo().getFreeDocks();
+                temp.setId(id);
+                temp.getCoordinate().setX(x);
+                temp.getCoordinate().setY(y);
+                temp.setCapacity(capacity);
+                temp.setTotalGets(totalGets);
+                temp.setTotalReturns(totalReturns);
+                temp.setAvailableBinas(availableBinas);
+                temp.setFreeDocks(freeDocks);
+
+
+                allStationViews.addElement(temp);
             }
             return allStationViews;
         } catch (UDDINamingException e) {
@@ -96,9 +114,27 @@ public class BinasPortImpl implements BinasPortType{
             StationClient stationClient = null;
             for(int i = 0; i < urls.size(); i++){
                 stationClient = new StationClient(urls.elementAt(i));
+                StationView temp = new StationView();
 
-                // TODO piazza question, conversion between 2 almost identical StationView
-                allStationViews.addElement((StationView) stationClient.getInfo());
+                String id = stationClient.getInfo().getId();
+                Integer x = stationClient.getInfo().getCoordinate().getX();
+                Integer y = stationClient.getInfo().getCoordinate().getY();
+                int capacity = stationClient.getInfo().getCapacity();
+                int totalGets = stationClient.getInfo().getTotalGets();
+                int totalReturns = stationClient.getInfo().getTotalReturns();
+                int availableBinas = stationClient.getInfo().getAvailableBinas();
+                int freeDocks = stationClient.getInfo().getFreeDocks();
+                temp.setId(id);
+                temp.getCoordinate().setX(x);
+                temp.getCoordinate().setY(y);
+                temp.setCapacity(capacity);
+                temp.setTotalGets(totalGets);
+                temp.setTotalReturns(totalReturns);
+                temp.setAvailableBinas(availableBinas);
+                temp.setFreeDocks(freeDocks);
+
+
+                allStationViews.addElement(temp);
             }
 
             for(int i = 0; i < numberOfStations; i++){
