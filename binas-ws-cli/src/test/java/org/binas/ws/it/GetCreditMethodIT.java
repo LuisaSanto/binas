@@ -24,6 +24,7 @@ public class GetCreditMethodIT extends BaseIT {
         } catch (EmailExists_Exception | InvalidEmail_Exception e) {
             //TODO SOMETHING HERE
         }
+
     }
 
     @Test
@@ -44,6 +45,7 @@ public class GetCreditMethodIT extends BaseIT {
     public void userNotExistNotActivated() throws UserNotExists_Exception {
         client.getCredit(validEmail2);
     }
+
 
     @After
     public void tearDown(){
