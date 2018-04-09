@@ -25,16 +25,12 @@ public class Binas {
     }
 
     public synchronized UserView getUser(String email){
-        if(isEmailValid(email)){
-            for(UserView user : users){
-                if(user.getEmail().equals(email)){
-                    return user;
-                }
+        for(UserView user : users){
+            if(user.getEmail().equals(email)){
+                return user;
             }
-            throw new UserNotExistsException();
-        }else {
-            throw new InvalidEmailException();
         }
+        throw new UserNotExistsException();
     }
 
     // activate a user by checking if the email is valid and then adding to the vector
