@@ -3,6 +3,7 @@ package org.binas.domain;
 
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
+import org.binas.ws.InvalidStation_Exception;
 import org.binas.ws.StationView;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
@@ -79,6 +80,15 @@ public class BinasManager {
         return null;
     }
 
+    public static synchronized StationView getStation(String stationId, String uddiUrl) {
+        Vector<StationView> allStationViews = (Vector<StationView>) getStations(uddiUrl);
+        for(StationView station : allStationViews){
+            if(station.getId().equals(stationId)){
+                return station;
+            }
+        }
+        return null;
+    }
 	
 	// TODO
 
