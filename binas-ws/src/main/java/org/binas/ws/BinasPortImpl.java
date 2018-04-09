@@ -1,6 +1,7 @@
 package org.binas.ws;
 
 import org.binas.domain.Binas;
+import org.binas.domain.BinasManager;
 import org.binas.exception.EmailExistsException;
 import org.binas.exception.InvalidEmailException;
 import org.binas.exception.UserNotExistsException;
@@ -34,55 +35,10 @@ public class BinasPortImpl implements BinasPortType{
         this.uddiUrl = uddiUrl;
     }
 
-    public List<StationView> getStations(){
-        try{
-            UDDINaming uddiNaming = new UDDINaming(uddiUrl);
-
-            // get all station records in UDDI , using * wildcard
-            Collection<UDDIRecord> UDDIrecords = uddiNaming.listRecords("A58_Station*");
-
-            Vector<String> urls = new Vector<>();
-            for(UDDIRecord uddiRecord : UDDIrecords){
-                urls.add(uddiRecord.getUrl());
-            }
-
-            Vector<StationView> allStationViews = new Vector<>();
-            StationClient stationClient = null;
-            for(int i = 0; i < urls.size(); i++){
-                stationClient = new StationClient(urls.elementAt(i));
-                StationView temp = new StationView();
-
-                String id = stationClient.getInfo().getId();
-                Integer x = stationClient.getInfo().getCoordinate().getX();
-                Integer y = stationClient.getInfo().getCoordinate().getY();
-                int capacity = stationClient.getInfo().getCapacity();
-                int totalGets = stationClient.getInfo().getTotalGets();
-                int totalReturns = stationClient.getInfo().getTotalReturns();
-                int availableBinas = stationClient.getInfo().getAvailableBinas();
-                int freeDocks = stationClient.getInfo().getFreeDocks();
-                temp.setId(id);
-                temp.getCoordinate().setX(x);
-                temp.getCoordinate().setY(y);
-                temp.setCapacity(capacity);
-                temp.setTotalGets(totalGets);
-                temp.setTotalReturns(totalReturns);
-                temp.setAvailableBinas(availableBinas);
-                temp.setFreeDocks(freeDocks);
-
-
-                allStationViews.addElement(temp);
-            }
-            return allStationViews;
-        } catch (UDDINamingException e) {
-            System.out.println("Problem reaching UDDI from Binas");
-        } catch (StationClientException e) {
-            System.out.println("Problem creating StationClient");
-        }
-        return null;
-    }
 
     private StationView getStation(String stationId) throws InvalidStation_Exception{
-        for(StationView station : getStations()){
+        Vector<StationView> allStationViews = (Vector<StationView>) BinasManager.getStations(uddiUrl);
+        for(StationView station : allStationViews){
             if(station.getId().equals(stationId)){
                 return station;
             }
@@ -98,72 +54,29 @@ public class BinasPortImpl implements BinasPortType{
         }
 
         Vector<StationView> closestKStations = new Vector<>();
+        Vector<StationView> allStationViews = (Vector<StationView>) BinasManager.getStations(uddiUrl);
 
-        try{
-            UDDINaming uddiNaming = new UDDINaming(uddiUrl);
-
-            // get all station records in UDDI , using * wildcard
-            Collection<UDDIRecord> UDDIrecords = uddiNaming.listRecords("A58_Station*");
-
-            Vector<String> urls = new Vector<>();
-            for(UDDIRecord uddiRecord : UDDIrecords){
-                urls.add(uddiRecord.getUrl());
+        for(int i = 0; i < numberOfStations; i++){
+            if(allStationViews.size() == 0){
+                break;
             }
 
-            Vector<StationView> allStationViews = new Vector<>();
-            StationClient stationClient = null;
-            for(int i = 0; i < urls.size(); i++){
-                stationClient = new StationClient(urls.elementAt(i));
-                StationView temp = new StationView();
+            double lowestDistance = Double.POSITIVE_INFINITY;
+            StationView closestStation = null;
 
-                String id = stationClient.getInfo().getId();
-                Integer x = stationClient.getInfo().getCoordinate().getX();
-                Integer y = stationClient.getInfo().getCoordinate().getY();
-                int capacity = stationClient.getInfo().getCapacity();
-                int totalGets = stationClient.getInfo().getTotalGets();
-                int totalReturns = stationClient.getInfo().getTotalReturns();
-                int availableBinas = stationClient.getInfo().getAvailableBinas();
-                int freeDocks = stationClient.getInfo().getFreeDocks();
-                temp.setId(id);
-                temp.getCoordinate().setX(x);
-                temp.getCoordinate().setY(y);
-                temp.setCapacity(capacity);
-                temp.setTotalGets(totalGets);
-                temp.setTotalReturns(totalReturns);
-                temp.setAvailableBinas(availableBinas);
-                temp.setFreeDocks(freeDocks);
+            for(int j = 0 ; j < allStationViews.size(); j++){
+                StationView stationView = allStationViews.elementAt(j);
+                double dist = distanceBetweenCoordinates(coordinates, stationView.getCoordinate());
 
-
-                allStationViews.addElement(temp);
-            }
-
-            for(int i = 0; i < numberOfStations; i++){
-                if(allStationViews.size() == 0){
-                    break;
+                if(dist < lowestDistance){
+                    lowestDistance = dist;
+                    closestStation = stationView;
                 }
-
-                double lowestDistance = Double.POSITIVE_INFINITY;
-                StationView closestStation = null;
-
-                for(int j = 0 ; j < allStationViews.size(); j++){
-                    StationView stationView = allStationViews.elementAt(j);
-                    double dist = distanceBetweenCoordinates(coordinates, stationView.getCoordinate());
-
-                    if(dist < lowestDistance){
-                        lowestDistance = dist;
-                        closestStation = stationView;
-                    }
-                }
-
-                closestKStations.add(closestStation);
-                allStationViews.removeElement(closestStation);
             }
-        } catch(UDDINamingException e){
-            System.out.println("Problem reaching UDDI from Binas");
-        } catch(StationClientException e){
-            System.out.println("Problem creating StationClient");
+
+            closestKStations.add(closestStation);
+            allStationViews.removeElement(closestStation);
         }
-
         return closestKStations;
     }
 
