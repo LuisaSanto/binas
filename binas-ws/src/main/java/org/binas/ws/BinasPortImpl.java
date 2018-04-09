@@ -5,6 +5,7 @@ import org.binas.domain.BinasManager;
 import org.binas.exception.EmailExistsException;
 import org.binas.exception.InvalidEmailException;
 import org.binas.exception.UserNotExistsException;
+import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
 import javax.jws.WebService;
@@ -105,7 +106,7 @@ public class BinasPortImpl implements BinasPortType{
     public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception,
             NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception{
         try{
-            StationView station = BinasManager.getStation(stationId, uddiUrl);
+            StationView station = BinasManager.getStationView(stationId, uddiUrl);
             if(station != null){
 
                 UserView user = Binas.getInstance().getUser(email);
@@ -114,14 +115,18 @@ public class BinasPortImpl implements BinasPortType{
                 if (!user.isHasBina()){
                     if (credit > 0) {
                         user.setCredit(credit - 1);
-                        //TODO Station.getBina();
+                        StationClient stationClient = BinasManager.getStationClient(stationId, uddiUrl);
+                        stationClient.getBina();
                     }
                     else throwNoCredit("User has no credit");
                 }
                 else throwAlreadyHasBina("User already has bina");
-            }else throwInvalidStation("Invalid Station");
+            }else throwInvalidStation("Invalid station");
         } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("User does not exist");
+        } catch (org.binas.station.ws.NoBinaAvail_Exception e) {
+            //TODO HELP HERE
+            throwNoBinaAvail("No bina available");
         }
     }
 
@@ -129,18 +134,21 @@ public class BinasPortImpl implements BinasPortType{
     public void returnBina(String stationId, String email) throws FullStation_Exception, InvalidStation_Exception,
             NoBinaRented_Exception, UserNotExists_Exception{
         try{
-            StationView station = BinasManager.getStation(stationId, uddiUrl);
-            if(station != null){
+            StationView stationView = BinasManager.getStationView(stationId, uddiUrl);
+            if(stationView != null){
                 UserView user = Binas.getInstance().getUser(email);
 
                 if(user.isHasBina()){
-                    //TODO Station.returnBina()
+                    StationClient stationClient = BinasManager.getStationClient(stationId, uddiUrl);
+                    stationClient.returnBina();
                 }
                 else throwNoBinaRented("No bina rented");
             }
             else throwInvalidStation("Invalid Station");
         } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("User does not exist");
+        } catch (NoSlotAvail_Exception e) {
+            throwFullStation("No slot available");
         }
 
     }
