@@ -79,7 +79,7 @@ public class BinasPortImpl implements BinasPortType{
     }
 
     @Override
-    public int getCredit(String email) throws UserNotExists_Exception { //TODO HELP INVALID MAIL
+    public int getCredit(String email) throws UserNotExists_Exception {
         try {
             return Binas.getInstance().getUser(email).getCredit();
         } catch (UserNotExistsException userNotExists) {
