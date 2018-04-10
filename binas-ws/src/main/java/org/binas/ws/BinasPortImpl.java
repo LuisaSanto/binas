@@ -116,7 +116,9 @@ public class BinasPortImpl implements BinasPortType{
                     if (credit > 0) {
                         user.setCredit(credit - 1);
                         StationClient stationClient = BinasManager.getStationClient(stationId, uddiUrl);
-                        stationClient.getBina();
+                        if (stationClient != null) {
+                            stationClient.getBina();
+                        }
                     }
                     else throwNoCredit("User has no credit");
                 }
@@ -140,7 +142,10 @@ public class BinasPortImpl implements BinasPortType{
 
                 if(user.isHasBina()){
                     StationClient stationClient = BinasManager.getStationClient(stationId, uddiUrl);
-                    stationClient.returnBina();
+                    if (stationClient != null) {
+                        int bonus = stationClient.returnBina();
+                        user.setCredit(user.getCredit()+bonus);
+                    }
                 }
                 else throwNoBinaRented("No bina rented");
             }
