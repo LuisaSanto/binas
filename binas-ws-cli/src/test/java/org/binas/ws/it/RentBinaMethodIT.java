@@ -78,6 +78,7 @@ public class RentBinaMethodIT extends BaseIT {
 
     private void createUserWithCredits(int credits){
         try{
+            client.testClear();
             client.testInit(credits);
             user = client.activateUser(validEmail1);
 
