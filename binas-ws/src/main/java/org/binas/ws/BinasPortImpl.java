@@ -130,7 +130,6 @@ public class BinasPortImpl implements BinasPortType{
         } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("User does not exist");
         } catch (org.binas.station.ws.NoBinaAvail_Exception e) {
-            //TODO HELP HERE
             throwNoBinaAvail("No bina available");
         }
     }
