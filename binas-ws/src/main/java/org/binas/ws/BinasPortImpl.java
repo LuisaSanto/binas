@@ -113,8 +113,6 @@ public class BinasPortImpl implements BinasPortType{
 
                 UserView user = Binas.getInstance().getUser(email);
 
-                System.out.println(" user credits : " + user.getCredit());
-
                 if (!user.isHasBina()){
                     if (user.getCredit() > 0) {
                         user.setCredit(user.getCredit() - 1);
@@ -151,10 +149,10 @@ public class BinasPortImpl implements BinasPortType{
                         user.setCredit(user.getCredit()+bonus);
                         user.setHasBina(false);
                     }
-                }
-                else throwNoBinaRented("No bina rented");
-            }
-            else throwInvalidStation("Invalid Station");
+                } else
+                    throwNoBinaRented("No bina rented");
+            } else
+                throwInvalidStation("Invalid Station");
         } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("User does not exist");
         } catch (NoSlotAvail_Exception e) {
