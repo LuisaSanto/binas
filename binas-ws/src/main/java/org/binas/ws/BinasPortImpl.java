@@ -193,7 +193,11 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInit_Exception{
-
+        try {
+            BinasManager.getStationClient(stationId, uddiUrl).testInit(x, y, capacity, returnPrize);
+        } catch (org.binas.station.ws.BadInit_Exception e) {
+            throwBadInit("Bad init station");
+        }
     }
 
     @Override
@@ -273,5 +277,13 @@ public class BinasPortImpl implements BinasPortType{
         faultInfo.message = message;
 
         throw new NoBinaRented_Exception(message, faultInfo);
+    }
+
+    /** Helper to throw a new BadInit exception. */
+    private void throwBadInit(final String message) throws BadInit_Exception {
+        BadInit faultInfo = new BadInit();
+        faultInfo.message = message;
+
+        throw new BadInit_Exception(message, faultInfo);
     }
 }
