@@ -42,7 +42,6 @@ public class GetCreditMethodIT extends BaseIT {
         client.getCredit(validEmail2);
     }
 
-
     @After
     public void tearDown(){
         client.testClear();
