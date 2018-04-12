@@ -21,9 +21,8 @@ public class ReturnBinaMethodIT extends BaseIT{
             station = client.getInfoStation(stationID);
 
             client.testInitStation(station.getId(), station.getCoordinate().getX(), station.getCoordinate().getY(), 10, 0);
-            //station.setAvailableBinas(10);
         } catch (EmailExists_Exception | InvalidEmail_Exception e) {
-            //TODO SOMETHING HERE
+            System.out.println("Problem activating user in setUp, email invalid or already exists");
         } catch(InvalidStation_Exception e){
             System.out.println("Invalid station in ReturnBinaMethodIT setUp");
         } catch(BadInit_Exception e){

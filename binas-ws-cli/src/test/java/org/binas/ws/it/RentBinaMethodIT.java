@@ -24,8 +24,7 @@ public class RentBinaMethodIT extends BaseIT {
             station = client.getInfoStation(stationID);
             client.testInitStation(stationID, 1, 1, 20, 2);
         } catch (EmailExists_Exception | InvalidEmail_Exception | InvalidStation_Exception e) {
-            //TODO SOMETHING HERE
-            System.out.println("yay error");
+            System.out.println("Problem in RentBinaMethodIT setUp - Email exists, invalid, or station invalid");
         } catch (BadInit_Exception e) {
             e.printStackTrace();
         }
