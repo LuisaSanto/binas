@@ -40,6 +40,7 @@ public class Binas {
         if(isEmailValid(email)){
             if(!userWithEmailExists(email)){
                 user.setEmail(email);
+                user.setCredit(0);
                 users.add(user);
 
                 return user;

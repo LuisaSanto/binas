@@ -81,7 +81,10 @@ public class BinasPortImpl implements BinasPortType{
     @Override
     public int getCredit(String email) throws UserNotExists_Exception {
         try {
-            return Binas.getInstance().getUser(email).getCredit();
+            UserView userView =  Binas.getInstance().getUser(email);
+            System.out.println("getcredit userview " + userView);
+            return userView.getCredit();
+
         } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("User does not exist");
         }

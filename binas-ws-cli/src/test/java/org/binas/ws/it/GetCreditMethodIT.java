@@ -27,9 +27,13 @@ public class GetCreditMethodIT extends BaseIT {
 
     }
 
-    @Test(expected = UserNotExists_Exception.class)
-    public void userExist() throws UserNotExists_Exception {
-        client.getCredit(validEmail1);
+    @Test
+    public void userExist()  {
+        try{
+            client.getCredit(validEmail1);
+        } catch(UserNotExists_Exception e){
+            fail(); 
+        }
     }
 
     @Test(expected = UserNotExists_Exception.class)
