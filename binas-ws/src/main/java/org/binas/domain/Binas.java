@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class Binas {
     private static Vector<UserView> users;
-    private int INITIAL_USER_POINTS = 0;
+    private int INITIAL_USER_POINTS = 10;
 
     private Binas(){
         users = new Vector<>();
