@@ -22,7 +22,7 @@ public class GetCreditMethodIT extends BaseIT {
         try {
             user = client.activateUser(validEmail1);
         } catch (EmailExists_Exception | InvalidEmail_Exception e) {
-            //TODO SOMETHING HERE
+            System.out.println("Email Exists or Invalid email activating user in setup - GetCreditMethodIT");
         }
 
     }

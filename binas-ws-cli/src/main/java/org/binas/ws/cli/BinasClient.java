@@ -1,6 +1,8 @@
 package org.binas.ws.cli;
 
 import org.binas.ws.*;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.xml.ws.BindingProvider;
 import java.util.List;
@@ -62,7 +64,26 @@ public class BinasClient implements BinasPortType {
 
     /** UDDI lookup */
     private void uddiLookup() throws BinasClientException {
-		// TODO
+        System.out.println("BinasClient looking up UDDI for wsURl");
+
+        try{
+            System.out.printf("BinasClient contacting UDDI at %s%n", uddiURL);
+            UDDINaming uddiNaming = new UDDINaming(uddiURL);
+
+            System.out.println("Client is looking up for Binas in UDDI with wsName: " + wsName);
+            String endpointAddress = uddiNaming.lookup(wsName);
+
+            this.wsURL = endpointAddress;
+
+            if (endpointAddress == null) {
+                System.out.println("Not found!");
+                return;
+            } else {
+                System.out.printf("Found %s%n", endpointAddress);
+            }
+        }catch(UDDINamingException e){
+            System.out.println("BinasClient was not able to contact Binas");
+        }
     }
 
     /** Stub creation and configuration */
