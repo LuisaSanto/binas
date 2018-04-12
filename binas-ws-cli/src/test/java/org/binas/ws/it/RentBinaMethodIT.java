@@ -67,7 +67,7 @@ public class RentBinaMethodIT extends BaseIT {
     @Test(expected = NoBinaAvail_Exception.class)
     public void noBinaAvail() throws UserNotExists_Exception, InvalidStation_Exception,
             AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception, BadInit_Exception {
-        station.setAvailableBinas(0);
+        client.testInitStation(stationID, station.getCoordinate().getX(), station.getCoordinate().getY(), 0, 2);
         client.rentBina(stationID, validEmail1);
     }
 

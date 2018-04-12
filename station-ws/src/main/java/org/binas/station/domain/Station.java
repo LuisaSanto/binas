@@ -53,11 +53,13 @@ public class Station {
  	
  	/** Synchronized locks object to configure initial values */
  	public synchronized void init(int x, int y, int capacity, int returnPrize) throws BadInitException {
- 		if(x < 0 || y < 0 || capacity < 0 || returnPrize < 0)
+ 		reset();
+ 	    if(x < 0 || y < 0 || capacity < 0 || returnPrize < 0)
  			throw new BadInitException();
 		this.coordinates = new Coordinates(x, y);
  		this.maxCapacity = capacity;
  		this.bonus = returnPrize;
+ 		System.out.println("init station capacity to " + capacity);
  	}
  	
 	public synchronized void reset() {
@@ -89,6 +91,7 @@ public class Station {
             throw new NoBinaAvailException();
 		freeDocks.incrementAndGet();
 		totalGets.incrementAndGet();
+		System.out.println("STATION : getAvailBinas = " + getAvailableBinas());
 	}
 
 
