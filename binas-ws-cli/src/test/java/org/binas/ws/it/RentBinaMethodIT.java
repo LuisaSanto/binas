@@ -2,6 +2,7 @@ package org.binas.ws.it;
 
 import org.binas.ws.*;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,6 +29,16 @@ public class RentBinaMethodIT extends BaseIT {
         } catch (BadInit_Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    @Test
+    public void success() throws BadInit_Exception, NoBinaAvail_Exception, NoCredit_Exception, InvalidStation_Exception, AlreadyHasBina_Exception, UserNotExists_Exception{
+        client.testInitStation(stationID, station.getCoordinate().getX(), station.getCoordinate().getY(), 10, 0);
+        client.rentBina(stationID, validEmail1);
+
+        station = client.getInfoStation(stationID);
+        Assert.assertEquals(9, station.getAvailableBinas());
     }
 
     @Test(expected = InvalidStation_Exception.class)

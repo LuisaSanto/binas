@@ -5,6 +5,7 @@ import org.binas.ws.InvalidEmail_Exception;
 import org.binas.ws.UserNotExists_Exception;
 import org.binas.ws.UserView;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ public class GetCreditMethodIT extends BaseIT {
         }
 
     }
+
 
     @Test
     public void userExist()  {

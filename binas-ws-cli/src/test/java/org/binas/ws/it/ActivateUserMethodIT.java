@@ -16,7 +16,7 @@ public class ActivateUserMethodIT extends BaseIT{
     }
 
     @Test
-    public void validEmail(){
+    public void success(){
         String validEmail = "valid.email@valid.domain";
 
         try{
