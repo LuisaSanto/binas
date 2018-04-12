@@ -3,6 +3,7 @@ package org.binas.domain;
 
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
+import org.binas.ws.CoordinatesView;
 import org.binas.ws.StationView;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
@@ -37,7 +38,7 @@ public class BinasManager {
             UDDINaming uddiNaming = new UDDINaming(uddiUrl);
 
             // get all station records in UDDI , using * wildcard
-            Collection<UDDIRecord> UDDIrecords = uddiNaming.listRecords("A58_Station*");
+            Collection<UDDIRecord> UDDIrecords = uddiNaming.listRecords("A58_Station%");
 
             Vector<String> urls = new Vector<>();
             for (UDDIRecord uddiRecord : UDDIrecords) {
@@ -83,6 +84,7 @@ public class BinasManager {
         int availableBinas = stationClient.getInfo().getAvailableBinas();
         int freeDocks = stationClient.getInfo().getFreeDocks();
         temp.setId(id);
+        temp.setCoordinate(new CoordinatesView());
         temp.getCoordinate().setX(x);
         temp.getCoordinate().setY(y);
         temp.setCapacity(capacity);
@@ -95,33 +97,20 @@ public class BinasManager {
     }
 
     public static synchronized StationClient getStationClient(String stationID, String uddiUrl) {
-        try {
-            UDDINaming uddiNaming = new UDDINaming(uddiUrl);
+        List<StationView> stationViews = getStations(uddiUrl);
+        for(StationView stationView : stationViews){
+            if(stationView.getId().equals(stationID)){
+                try{
+                    StationClient stationClient = new StationClient(uddiUrl, stationID);
 
-            // get all station records in UDDI , using * wildcard
-            Collection<UDDIRecord> UDDIrecords = uddiNaming.listRecords("A58_Station*");
-
-            Vector<String> urls = new Vector<>();
-            for (UDDIRecord uddiRecord : UDDIrecords) {
-                urls.add(uddiRecord.getUrl());
-            }
-
-            StationClient stationClient = null;
-            for (int i = 0; i < urls.size(); i++) {
-                stationClient = new StationClient(urls.elementAt(i));
-                StationView temp = convertStations(stationClient);
-                if (temp.getId().equals(stationID)) {
                     return stationClient;
+                } catch(StationClientException e){
+                    System.out.println("Problem finding station client");
                 }
             }
-        } catch (UDDINamingException e) {
-            System.out.println("Problem reaching UDDI from Binas");
-        } catch (StationClientException e) {
-            System.out.println("Problem creating StationClient");
         }
         return null;
     }
 
-	// TODO
 
 }

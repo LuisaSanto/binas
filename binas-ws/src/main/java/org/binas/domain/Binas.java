@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 public class Binas {
     private static Vector<UserView> users;
+    private int INITIAL_USER_POINTS = 0;
 
     private Binas(){
         users = new Vector<>();
@@ -33,6 +34,14 @@ public class Binas {
         throw new UserNotExistsException();
     }
 
+    public synchronized Vector<UserView> getUsers(){
+        return users;
+    }
+
+    public synchronized void setInitialUserPoints(int initialUserPoints){
+        this.INITIAL_USER_POINTS = initialUserPoints;
+    }
+
     // activate a user by checking if the email is valid and then adding to the vector
     public synchronized UserView activateUser(String email){
         UserView user = new UserView();
@@ -40,7 +49,8 @@ public class Binas {
         if(isEmailValid(email)){
             if(!userWithEmailExists(email)){
                 user.setEmail(email);
-                user.setCredit(0);
+                user.setCredit(INITIAL_USER_POINTS);
+                user.setHasBina(false);
                 users.add(user);
 
                 return user;

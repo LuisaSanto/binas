@@ -18,16 +18,11 @@ public class RentBinaMethodIT extends BaseIT {
 
     @Before
     public void setUp() {
-        //client.testClear();
         try {
+            client.testInit(10);
             user = client.activateUser(validEmail1);
             station = client.getInfoStation(stationID);
             client.testInitStation(stationID, 1, 1, 20, 2);
-            System.out.println(station.getId());
-            user.setCredit(10);
-            user.setHasBina(false);
-
-
         } catch (EmailExists_Exception | InvalidEmail_Exception | InvalidStation_Exception e) {
             //TODO SOMETHING HERE
             System.out.println("yay error");
@@ -45,21 +40,21 @@ public class RentBinaMethodIT extends BaseIT {
     @Test(expected = AlreadyHasBina_Exception.class)
     public void userHasBina() throws UserNotExists_Exception, InvalidStation_Exception,
             AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception {
-        user.setHasBina(true);
+        client.rentBina(stationID, validEmail1);
         client.rentBina(stationID, validEmail1);
     }
 
     @Test(expected = NoCredit_Exception.class)
     public void userHasNoCredit() throws UserNotExists_Exception, InvalidStation_Exception,
             AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception {
-        user.setCredit(0);
+        createUserWithCredits(0);
         client.rentBina(stationID, validEmail1);
     }
 
     @Test(expected = NoCredit_Exception.class)
     public void userHasNegativeCredit() throws UserNotExists_Exception, InvalidStation_Exception,
             AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception {
-        user.setCredit(-1);
+        createUserWithCredits(-1);
         client.rentBina(stationID, validEmail1);
     }
 
@@ -79,6 +74,21 @@ public class RentBinaMethodIT extends BaseIT {
     @After
     public void tearDown(){
         client.testClear();
+    }
+
+    private void createUserWithCredits(int credits){
+        try{
+            client.testInit(credits);
+            user = client.activateUser(validEmail1);
+
+        } catch(BadInit_Exception e){
+            e.printStackTrace();
+        } catch(InvalidEmail_Exception e){
+            System.out.println("Error activating user with credits test, invalid email");
+        } catch(EmailExists_Exception e){
+            System.out.println("Error activating user with credits test, email exists");
+        }
+
     }
 
 }

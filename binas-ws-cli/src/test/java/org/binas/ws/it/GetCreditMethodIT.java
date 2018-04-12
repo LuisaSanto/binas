@@ -32,7 +32,7 @@ public class GetCreditMethodIT extends BaseIT {
         try{
             client.getCredit(validEmail1);
         } catch(UserNotExists_Exception e){
-            fail(); 
+            fail();
         }
     }
 

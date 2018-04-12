@@ -82,7 +82,6 @@ public class BinasPortImpl implements BinasPortType{
     public int getCredit(String email) throws UserNotExists_Exception {
         try {
             UserView userView =  Binas.getInstance().getUser(email);
-            System.out.println("getcredit userview " + userView);
             return userView.getCredit();
 
         } catch (UserNotExistsException userNotExists) {
@@ -113,19 +112,20 @@ public class BinasPortImpl implements BinasPortType{
             if(station != null){
 
                 UserView user = Binas.getInstance().getUser(email);
-                int credit = getCredit(email);
 
                 if (!user.isHasBina()){
-                    if (credit > 0) {
-                        user.setCredit(credit - 1);
+                    if (user.getCredit() > 0) {
+                        user.setCredit(user.getCredit() - 1);
+                        user.setHasBina(true);
                         StationClient stationClient = BinasManager.getStationClient(stationId, uddiUrl);
+
                         if (stationClient != null) {
                             stationClient.getBina();
                         }
-                    }
-                    else throwNoCredit("User has no credit");
-                }
-                else throwAlreadyHasBina("User already has bina");
+                    } else
+                        throwNoCredit("User has no credit");
+                } else
+                    throwAlreadyHasBina("User already has bina");
             }else throwInvalidStation("Invalid station");
         } catch (UserNotExistsException userNotExists) {
             throwUserNotExists("User does not exist");
@@ -148,6 +148,7 @@ public class BinasPortImpl implements BinasPortType{
                     if (stationClient != null) {
                         int bonus = stationClient.returnBina();
                         user.setCredit(user.getCredit()+bonus);
+                        user.setHasBina(false);
                     }
                 }
                 else throwNoBinaRented("No bina rented");
@@ -197,7 +198,14 @@ public class BinasPortImpl implements BinasPortType{
     @Override
     public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInit_Exception{
         try {
-            BinasManager.getStationClient(stationId, uddiUrl).testInit(x, y, capacity, returnPrize);
+            StationClient stationClient = BinasManager.getStationClient(stationId, uddiUrl);
+
+            if(stationClient != null){
+                stationClient.testInit(x, y, capacity, returnPrize);
+            }else{
+                System.out.println("Station not found");
+            }
+
         } catch (org.binas.station.ws.BadInit_Exception e) {
             throwBadInit("Bad init station");
         }
@@ -205,7 +213,7 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public void testInit(int userInitialPoints) throws BadInit_Exception{
-        Binas.getInstance().clearUsers();
+        Binas.getInstance().setInitialUserPoints(userInitialPoints);
     }
 
     // Exception Helpers
