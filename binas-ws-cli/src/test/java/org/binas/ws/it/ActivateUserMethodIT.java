@@ -28,8 +28,8 @@ public class ActivateUserMethodIT extends BaseIT{
         }
     }
 
-    @Test
-    public void invalidEmail(){
+    @Test(expected = InvalidEmail_Exception.class)
+    public void invalidEmailNotEmpty() throws InvalidEmail_Exception{
         String validEmail = ".invalid.emai@l@invalid";
 
         try{
@@ -37,21 +37,29 @@ public class ActivateUserMethodIT extends BaseIT{
             fail();
         } catch(EmailExists_Exception e){
             fail();
-        } catch(InvalidEmail_Exception e){
-
         }
     }
 
-    @Test
-    public void emailExists(){
+    @Test(expected = InvalidEmail_Exception.class)
+    public void invalidEmailEmpty() throws InvalidEmail_Exception{
+        String validEmail = "@invalid";
+
+        try{
+            client.activateUser(validEmail);
+            fail();
+        } catch(EmailExists_Exception e){
+            fail();
+        }
+    }
+
+    @Test(expected = EmailExists_Exception.class)
+    public void emailExists() throws EmailExists_Exception{
         String validEmail = "valid.email@valid.domain";
 
         try{
             client.activateUser(validEmail);
             client.activateUser(validEmail);
             fail();
-        } catch(EmailExists_Exception e){
-
         } catch(InvalidEmail_Exception e){
             fail();
         }
