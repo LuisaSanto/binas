@@ -59,7 +59,6 @@ public class Station {
 		this.coordinates = new Coordinates(x, y);
  		this.maxCapacity = capacity;
  		this.bonus = returnPrize;
- 		System.out.println("init station capacity to " + capacity);
  	}
  	
 	public synchronized void reset() {
@@ -91,7 +90,6 @@ public class Station {
             throw new NoBinaAvailException();
 		freeDocks.incrementAndGet();
 		totalGets.incrementAndGet();
-		System.out.println("STATION : getAvailBinas = " + getAvailableBinas());
 	}
 
 
