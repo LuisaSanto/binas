@@ -16,16 +16,9 @@ public class ActivateUserMethodIT extends BaseIT{
     }
 
     @Test
-    public void success(){
+    public void success() throws EmailExists_Exception, InvalidEmail_Exception{
         String validEmail = "valid.email@valid.domain";
-
-        try{
-            client.activateUser(validEmail);
-        } catch(EmailExists_Exception e){
-            fail();
-        } catch(InvalidEmail_Exception e){
-            fail();
-        }
+        client.activateUser(validEmail);
     }
 
     @Test(expected = InvalidEmail_Exception.class)

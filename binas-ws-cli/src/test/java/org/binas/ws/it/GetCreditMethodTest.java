@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.fail;
 
-public class GetCreditMethodIT extends BaseIT {
+public class GetCreditMethodTest extends BaseIT {
     UserView user;
     String validEmail1 = "valid.email@valid.domain";
     String validEmail2 = "valid1.email@valid.domain";
@@ -23,7 +23,7 @@ public class GetCreditMethodIT extends BaseIT {
         try {
             user = client.activateUser(validEmail1);
         } catch (EmailExists_Exception | InvalidEmail_Exception e) {
-            System.out.println("Email Exists or Invalid email activating user in setup - GetCreditMethodIT");
+            System.out.println("Email Exists or Invalid email activating user in setup - GetCreditMethodTest");
         }
 
     }
