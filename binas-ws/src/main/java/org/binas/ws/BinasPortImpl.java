@@ -75,7 +75,7 @@ public class BinasPortImpl implements BinasPortType{
 
     @Override
     public StationView getInfoStation(String stationId) throws InvalidStation_Exception{
-        return null;
+        return BinasManager.getStationView(stationId, uddiUrl);
     }
 
     @Override
