@@ -113,6 +113,8 @@ public class BinasPortImpl implements BinasPortType{
 
                 UserView user = Binas.getInstance().getUser(email);
 
+                System.out.println(" user credits : " + user.getCredit());
+
                 if (!user.isHasBina()){
                     if (user.getCredit() > 0) {
                         user.setCredit(user.getCredit() - 1);
