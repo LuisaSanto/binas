@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ReturnBinaMethodIT extends BaseIT{
+public class ReturnBinaMethodTest extends BaseIT{
     UserView user;
     StationView station;
     String validEmail1 = "valid.email@valid.domain";
@@ -25,7 +25,7 @@ public class ReturnBinaMethodIT extends BaseIT{
         } catch (EmailExists_Exception | InvalidEmail_Exception e) {
             System.out.println("Problem activating user in setUp, email invalid or already exists");
         } catch(InvalidStation_Exception e){
-            System.out.println("Invalid station in ReturnBinaMethodIT setUp");
+            System.out.println("Invalid station in ReturnBinaMethodTest setUp");
         } catch(BadInit_Exception e){
             e.printStackTrace();
         }

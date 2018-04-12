@@ -6,7 +6,7 @@ import org.binas.ws.StationView;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class GetInfoStationMethodIT extends BaseIT{
+public class GetInfoStationMethodTest extends BaseIT{
     private String stationID = "A58_Station1";
     private String noStationID = "station ID";
 

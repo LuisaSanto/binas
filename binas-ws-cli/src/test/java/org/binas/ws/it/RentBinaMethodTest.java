@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.fail;
 
-public class RentBinaMethodIT extends BaseIT {
+public class RentBinaMethodTest extends BaseIT {
     private String validEmail1 = "valid.email@valid.domain";
     private String validEmail2 = "valid1.email@valid.domain";
     private String stationID = "A58_Station1";
@@ -25,7 +25,7 @@ public class RentBinaMethodIT extends BaseIT {
             station = client.getInfoStation(stationID);
             client.testInitStation(stationID, 1, 1, 20, 2);
         } catch (EmailExists_Exception | InvalidEmail_Exception | InvalidStation_Exception e) {
-            System.out.println("Problem in RentBinaMethodIT setUp - Email exists, invalid, or station invalid");
+            System.out.println("Problem in RentBinaMethodTest setUp - Email exists, invalid, or station invalid");
         } catch (BadInit_Exception e) {
             e.printStackTrace();
         }
