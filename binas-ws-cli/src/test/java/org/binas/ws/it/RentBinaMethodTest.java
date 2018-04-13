@@ -56,14 +56,14 @@ public class RentBinaMethodTest extends BaseIT {
 
     @Test(expected = NoCredit_Exception.class)
     public void userHasNoCredit() throws UserNotExists_Exception, InvalidStation_Exception,
-            AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception {
+            AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception, BadInit_Exception, InvalidEmail_Exception, EmailExists_Exception{
         createUserWithCredits(0);
         client.rentBina(stationID, validEmail1);
     }
 
     @Test(expected = NoCredit_Exception.class)
     public void userHasNegativeCredit() throws UserNotExists_Exception, InvalidStation_Exception,
-            AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception {
+            AlreadyHasBina_Exception, NoBinaAvail_Exception, NoCredit_Exception, BadInit_Exception, InvalidEmail_Exception, EmailExists_Exception{
         createUserWithCredits(-1);
         client.rentBina(stationID, validEmail1);
     }
@@ -86,20 +86,10 @@ public class RentBinaMethodTest extends BaseIT {
         client.testClear();
     }
 
-    private void createUserWithCredits(int credits){
-        try{
-            client.testClear();
-            client.testInit(credits);
-            user = client.activateUser(validEmail1);
-
-        } catch(BadInit_Exception e){
-            e.printStackTrace();
-        } catch(InvalidEmail_Exception e){
-            System.out.println("Error activating user with credits test, invalid email");
-        } catch(EmailExists_Exception e){
-            System.out.println("Error activating user with credits test, email exists");
-        }
-
+    private void createUserWithCredits(int credits) throws BadInit_Exception, EmailExists_Exception, InvalidEmail_Exception{
+        client.testClear();
+        client.testInit(credits);
+        user = client.activateUser(validEmail1);
     }
 
 }
