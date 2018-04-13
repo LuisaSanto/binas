@@ -95,7 +95,7 @@ public class BinasPortImpl implements BinasPortType{
         try{
             return Binas.getInstance().activateUser(email);
         }catch(EmailExistsException e){
-            throwEmailExists("Email does not exist");
+            throwEmailExists("Email already exists");
         }catch(InvalidEmailException e){
             throwInvalidEmail("Invalid email");
         }
