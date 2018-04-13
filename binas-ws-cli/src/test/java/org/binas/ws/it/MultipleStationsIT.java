@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 public class MultipleStationsIT extends BaseIT {
     private String validEmail1 = "valid.email@valid.domain";
     private String validEmail2 = "valid1.email@valid.domain";
@@ -45,7 +47,26 @@ public class MultipleStationsIT extends BaseIT {
         client.returnBina(stationIDs[1], validEmail2);
         Assert.assertEquals(12, client.getInfoStation(stationIDs[1]).getCapacity());
         Assert.assertEquals(10, client.getCredit(validEmail2));
+    }
 
+    @Test
+    public void closestStations(){
+        CoordinatesView coordinatesView = new CoordinatesView();
+        coordinatesView.setX(49);
+        coordinatesView.setY(49);
+
+        List<StationView> stationViews = client.listStations(1, coordinatesView);
+
+        Assert.assertEquals(1, stationViews.size());
+        Assert.assertEquals(stationIDs[2], stationViews.get(0).getId());
+
+        coordinatesView.setX(40);
+        coordinatesView.setY(40);
+        stationViews = client.listStations(2, coordinatesView);
+
+        Assert.assertEquals(2, stationViews.size());
+        Assert.assertEquals(stationIDs[2], stationViews.get(0).getId());
+        Assert.assertEquals(stationIDs[0], stationViews.get(1).getId());
     }
 
     @After
