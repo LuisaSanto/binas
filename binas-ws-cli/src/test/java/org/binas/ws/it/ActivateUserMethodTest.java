@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.fail;
 
-public class ActivateUserMethodIT extends BaseIT{
+public class ActivateUserMethodTest extends BaseIT{
 
     @Before
     public void setUp() {
