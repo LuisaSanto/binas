@@ -208,11 +208,11 @@
 
         <operation name="getBina">
             <input wsam:Action="http://ws.station.binas.org/Station/getBinaRequest"
-                   message="tns:getBina" />
+                message="tns:getBina" />
             <output wsam:Action="http://ws.station.binas.org/Station/getBinaResponse"
-                    message="tns:getBinaResponse" />
+                message="tns:getBinaResponse" />
             <fault message="tns:NoBinaAvail" name="NoBinaAvail"
-                   wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/NoBinaAvail" />
+                wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/NoBinaAvail" />
         </operation>
 
         <operation name="returnBina">

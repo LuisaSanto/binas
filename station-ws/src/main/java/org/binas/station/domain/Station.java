@@ -6,7 +6,12 @@ import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
 
-/** Domain Root. */
+/**
+ * Station Client
+ *
+ * Station is defined by an ID, a set of Coordinates, capacity and retrieval bonus. 
+ *
+ */
 public class Station {
 	
 	/** Creates and returns default coordinates. */
@@ -53,8 +58,7 @@ public class Station {
  	
  	/** Synchronized locks object to configure initial values */
  	public synchronized void init(int x, int y, int capacity, int returnPrize) throws BadInitException {
- 		reset();
- 	    if(x < 0 || y < 0 || capacity < 0 || returnPrize < 0)
+ 		if(x < 0 || y < 0 || capacity < 0 || returnPrize < 0)
  			throw new BadInitException();
 		this.coordinates = new Coordinates(x, y);
  		this.maxCapacity = capacity;
@@ -87,12 +91,10 @@ public class Station {
 	/** Synchronized locks object before attempting to get Bina */
 	public synchronized void getBina() throws NoBinaAvailException {
 		if(getFreeDocks() == getMaxCapacity())
-            throw new NoBinaAvailException();
+			throw new NoBinaAvailException();
 		freeDocks.incrementAndGet();
 		totalGets.incrementAndGet();
 	}
-
-
 
  	// Getters -------------------------------------------------------------
  	
@@ -134,5 +136,5 @@ public class Station {
     public synchronized int getAvailableBinas() {
     	return maxCapacity - freeDocks.get();
     }
-
+    	
 }

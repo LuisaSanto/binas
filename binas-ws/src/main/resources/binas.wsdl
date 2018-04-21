@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- 
     WSDL contract for Binas service.
 
@@ -85,7 +84,6 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:element name="getCredit" type="tns:getCredit" />
-
 
             <xs:complexType name="getCreditResponse">
                 <xs:sequence>
