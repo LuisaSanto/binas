@@ -1,13 +1,19 @@
 package org.binas.station.ws.cli;
 
-import org.binas.station.ws.*;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
-import javax.xml.ws.BindingProvider;
 import java.util.Map;
 
-import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+import javax.xml.ws.BindingProvider;
+
+import org.binas.station.ws.BadInit_Exception;
+import org.binas.station.ws.NoBinaAvail_Exception;
+import org.binas.station.ws.NoSlotAvail_Exception;
+import org.binas.station.ws.StationPortType;
+import org.binas.station.ws.StationService;
+import org.binas.station.ws.StationView;
+
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 /**
  * Client port wrapper.
@@ -37,7 +43,7 @@ public class StationClient implements StationPortType {
 	}
 
 	/** output option **/
-	private boolean verbose = true;
+	private boolean verbose = false;
 
 	public boolean isVerbose() {
 		return verbose;
@@ -47,94 +53,90 @@ public class StationClient implements StationPortType {
 		this.verbose = verbose;
 	}
 
-	/** constructor with provided web service URL , USE WHEN WE HAVE THE WSURL FROM UDDI or other means*/
+	/** constructor with provided web service URL */
 	public StationClient(String wsURL) throws StationClientException {
 		this.wsURL = wsURL;
 		createStub();
 	}
 
-	/** constructor with provided UDDI location and name, USE WHEN WE DONT KNOW THE WSURL */
+	/** constructor with provided UDDI location and name */
 	public StationClient(String uddiURL, String wsName) throws StationClientException {
 		this.uddiURL = uddiURL;
 		this.wsName = wsName;
-
 		uddiLookup();
 		createStub();
 	}
 
 	/** UDDI lookup */
 	private void uddiLookup() throws StationClientException {
-	    System.out.println("StationClient looking up UDDI for wsURl");
+		try {
+			if (verbose)
+				System.out.printf("Contacting UDDI at %s%n", uddiURL);
+			UDDINaming uddiNaming = new UDDINaming(uddiURL);
 
-        try{
-            System.out.printf("Client contacting UDDI at %s%n", uddiURL);
-            UDDINaming uddiNaming = new UDDINaming(uddiURL);
+			if (verbose)
+				System.out.printf("Looking for '%s'%n", wsName);
+			wsURL = uddiNaming.lookup(wsName);
 
-            System.out.println("Client is looking up for station in UDDI with wsName: " + wsName);
-            String endpointAddress = uddiNaming.lookup(wsName);
+		} catch (Exception e) {
+			String msg = String.format("Client failed lookup on UDDI at %s!", uddiURL);
+			throw new StationClientException(msg, e);
+		}
 
-            this.wsURL = endpointAddress;
-
-            if (endpointAddress == null) {
-                System.out.println("Not found!");
-                return;
-            } else {
-                System.out.printf("Found %s%n", endpointAddress);
-            }
-        }catch(UDDINamingException e){
-            System.out.println("StationClient was not able to contact station");
-        }
+		if (wsURL == null) {
+			String msg = String.format("Service with name %s not found on UDDI at %s", wsName, uddiURL);
+			throw new StationClientException(msg);
+		}
 	}
-
 
 	/** Stub creation and configuration */
 	private void createStub() {
-		 if (verbose)
-		    System.out.println("Creating stub ...");
-		 service = new StationService();
-		 port = service.getStationPort();
+		if (verbose)
+			System.out.println("Creating stub ...");
+		service = new StationService();
+		port = service.getStationPort();
 
-		 if (wsURL != null) {
-			 if (verbose)
-				 System.out.println("Setting endpoint address ...");
-				 BindingProvider bindingProvider = (BindingProvider) port;
-				 Map<String, Object> requestContext = bindingProvider.getRequestContext();
-				 requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
-		 }
+		if (wsURL != null) {
+			if (verbose)
+				System.out.println("Setting endpoint address ...");
+			BindingProvider bindingProvider = (BindingProvider) port;
+			Map<String, Object> requestContext = bindingProvider.getRequestContext();
+			requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
+		}
 	}
 
 	// remote invocation methods ----------------------------------------------
 
-	 @Override
-	 public StationView getInfo() {
-	    return port.getInfo();
-	 }
+	@Override
+	public StationView getInfo() {
+		return port.getInfo();
+	}
 
-	 @Override
-	 public void getBina() throws NoBinaAvail_Exception {
-	    port.getBina();
-	 }
+	@Override
+	public void getBina() throws NoBinaAvail_Exception {
+		port.getBina();
+	}
 
-	 @Override
-	 public int returnBina() throws NoSlotAvail_Exception {
-	    return port.returnBina();
-	 }
+	@Override
+	public int returnBina() throws NoSlotAvail_Exception {
+		return port.returnBina();
+	}
 
 	// test control operations ------------------------------------------------
 
-	 @Override
-	 public String testPing(String inputMessage) {
-	    return port.testPing(inputMessage);
-	 }
+	@Override
+	public String testPing(String inputMessage) {
+		return port.testPing(inputMessage);
+	}
 
-	 @Override
-	 public void testClear() {
-	    port.testClear();
-	 }
+	@Override
+	public void testClear() {
+		port.testClear();
+	}
 
-	 @Override
-	 public void testInit(int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
-	    port.testInit(x, y, capacity, returnPrize);
-	 }
+	@Override
+	public void testInit(int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
+		port.testInit(x, y, capacity, returnPrize);
+	}
 
 }

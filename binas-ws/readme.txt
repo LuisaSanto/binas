@@ -1,4 +1,4 @@
-A58
+CXX
 ---
 
 This is a Java Web Service defined by the WSDL file that generates Java code
@@ -35,4 +35,4 @@ Check that the desired POM is selected and 'Finish'.
 
 
 ---
-A58
+CXX

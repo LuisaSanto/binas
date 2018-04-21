@@ -1,4 +1,4 @@
-A58
+CXX
 ---
 
 This is a simple Java Web Service client
@@ -41,4 +41,4 @@ Check that the desired POM is selected and 'Finish'.
 
 
 ---
-A58
+CXX
