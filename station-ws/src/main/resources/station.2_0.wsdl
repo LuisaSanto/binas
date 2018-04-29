@@ -287,6 +287,23 @@
                 wsam:Action="http://ws.station.binas.org/Station/returnBina/Fault/NoSlotAvail" />
         </operation>
 
+        <operation name="getBalance">
+            <input wsam:Action="http://ws.station.binas.org/Station/getBalance"
+                   message="tns:getBalance" />
+            <output wsam:Action="http://ws.station.binas.org/Station/getBalanceResponse"
+                    message="tns:getBalanceResponse" />
+            <fault message="tns:UserNotExist" name="UserNotExist"
+                   wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/UserNotExist" />
+        </operation>
+
+        <operation name="setBalance">
+            <input wsam:Action="http://ws.station.binas.org/Station/setBalanceRequest"
+                   message="tns:setBalance" />
+            <output wsam:Action="http://ws.station.binas.org/Station/setBalanceResponse"
+                    message="tns:setBalanceResponse" />
+
+        </operation>
+
         <!-- test control operations -->
         <operation name="test_ping">
             <input wsam:Action="http://ws.station.binas.org/Station/test_ping_request"
@@ -311,22 +328,7 @@
                 wsam:Action="http://ws.station.binas.org/Station/test_init/Fault/BadInit" />
         </operation>
 
-        <operation name="getBalance">
-            <input wsam:Action="http://ws.station.binas.org/Station/getBalanceRequest"
-                message="tns:getBalance" />
-            <output wsam:Action="http://ws.station.binas.org/Station/getBalanceResponse"
-                message="tns:getBalanceResponse" />
-            <fault message="tns:UserNotExist" name="UserNotExist"
-                   wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/UserNotExist" />
-        </operation>
 
-        <operation name="setBalance">
-            <input wsam:Action="http://ws.station.binas.org/Station/setBalanceRequest"
-                   message="tns:setBalance" />
-            <output wsam:Action="http://ws.station.binas.org/Station/setBalanceResponse"
-                    message="tns:setBalanceResponse" />
-
-        </operation>
     </portType>
 
     <!-- SOAP/HTTP Binding -->
