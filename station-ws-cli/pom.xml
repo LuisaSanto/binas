@@ -26,7 +26,7 @@
 
 		<!-- instance number -->
 		<ws.i>1</ws.i>
-		<uddi.url>http://localhost:9090</uddi.url>
+        <uddi.url>http://a58:5TmzqfS@uddi.sd.rnl.tecnico.ulisboa.pt:9090/</uddi.url>
 
 		<group.id>A58</group.id>
 

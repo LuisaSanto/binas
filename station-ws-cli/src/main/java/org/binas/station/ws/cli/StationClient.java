@@ -124,7 +124,7 @@ public class StationClient implements StationPortType {
     }
 
     @Override
-    public String setBalance(String userEmail, TaggedBalance taggedBalance) throws UserNotExist_Exception{
+    public String setBalance(String userEmail, TaggedBalance taggedBalance){
         return port.setBalance(userEmail, taggedBalance);
     }
 
