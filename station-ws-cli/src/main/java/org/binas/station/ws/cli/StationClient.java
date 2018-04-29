@@ -119,10 +119,10 @@ public class StationClient implements StationPortType {
 	}
 
     @Override
-    public GetBalanceResponseView getBalance(String userEmail) throws UserNotExist_Exception{
+    public TaggedBalance getBalance(String userEmail) throws UserNotExist_Exception{
         return port.getBalance(userEmail);
     }
-    
+
 
     // test control operations ------------------------------------------------
 

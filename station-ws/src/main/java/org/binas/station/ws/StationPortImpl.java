@@ -65,11 +65,11 @@ public class StationPortImpl implements StationPortType {
 	}
 
     @Override
-    public GetBalanceResponseView getBalance(String userEmail) throws UserNotExist_Exception{
+    public TaggedBalance getBalance(String userEmail) throws UserNotExist_Exception{
         try{
             User user =  UsersManager.getInstance().getUser(userEmail);
 
-            return buildGetBalanceResponseView(user);
+            return buildTaggedBalance(user);
         } catch(UserNotFoundException e){
             throwUserNotExist("User not found at this station!");
         }
@@ -151,12 +151,12 @@ public class StationPortImpl implements StationPortType {
 	}
 
     /** Helper to convert a email,balance user to a UserView containing a tag and a value. */
-	private GetBalanceResponseView buildGetBalanceResponseView(User user){
-        GetBalanceResponseView balanceResponseView = new GetBalanceResponseView();
-        balanceResponseView.setValue(user.getBalance());
-        balanceResponseView.setTag(user.getMostRecentTag());
+	private TaggedBalance buildTaggedBalance(User user){
+        TaggedBalance taggedBalance = new TaggedBalance();
+        taggedBalance.setValue(user.getBalance());
+        taggedBalance.setTag(user.getMostRecentTag());
 
-        return balanceResponseView;
+        return taggedBalance;
     }
 	
 	// Exception helpers -----------------------------------------------------
