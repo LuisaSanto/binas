@@ -40,7 +40,7 @@ public class UsersManager {
 	private Map<String, User> registeredUsers = new ConcurrentHashMap<>();
 
 	public void addUser(User user){
-	    if(user != null && user.getEmail() != null && user.getBalance() >= 0)
+	    if(user != null && user.getEmail() != null)
 	        registeredUsers.put(user.getEmail(), user);
     }
 	

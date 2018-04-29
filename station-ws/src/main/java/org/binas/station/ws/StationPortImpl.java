@@ -83,23 +83,23 @@ public class StationPortImpl implements StationPortType {
     }
 
     /**
-     * Set the balance of a user in this station
+     * Set the balance of a user in this station, if user not present, adds a new one with the balance and tag defined
      * @param userEmail email of user
      * @param taggedBalance data transfer object with a tag, and a value
-     * @throws UserNotExist_Exception
      */
     @Override
     public String setBalance(String userEmail, TaggedBalance taggedBalance){
         User user;
         try{
             user =  UsersManager.getInstance().getUser(userEmail);
+
+            user.setBalance(taggedBalance.getValue());
+            user.setMostRecentTag(taggedBalance.getTag());
+
         } catch(UserNotFoundException e){
-            user = new User(userEmail);
+            user = new User(userEmail, taggedBalance.getValue(), taggedBalance.getTag());
             UsersManager.getInstance().addUser(user);
         }
-
-        user.setBalance(taggedBalance.getValue());
-        user.setMostRecentTag(taggedBalance.getTag());
 
         return "ack";
     }
