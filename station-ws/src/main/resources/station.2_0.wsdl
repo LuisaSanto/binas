@@ -37,12 +37,14 @@
                 </xs:sequence>
             </xs:complexType>
 
-            <xs:complexType name="getBalanceResponseView">
+            <xs:complexType name="taggedBalance">
                 <xs:sequence>
                     <xs:element name="value" type="xs:double" />
                     <xs:element name="tag" type="xs:string" />
                 </xs:sequence>
             </xs:complexType>
+
+
 
 
             <xs:complexType name="getInfo">
@@ -109,11 +111,18 @@
 
             <xs:complexType name="getBalanceResponse">
                 <xs:sequence>
-                	<xs:element name="userView" type="tns:getBalanceResponseView" />
+                	<xs:element name="userView" type="tns:taggedBalance" />
 
                 </xs:sequence>
             </xs:complexType>
             <xs:element name="getBalanceResponse" type="tns:getBalanceResponse" />
+
+            <xs:complexType name="setBalance">
+                <xs:sequence>
+                    <xs:element name="user_email" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="setBalance" type="tns:setBalance" />
 
             <!-- test control operations data types -->
 
