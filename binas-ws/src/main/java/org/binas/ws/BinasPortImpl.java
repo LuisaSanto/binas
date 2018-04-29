@@ -38,6 +38,8 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
         serviceName = "BinasService"
 )
 public class BinasPortImpl implements BinasPortType {
+
+    public BinasPortImpl(){}
 	
 	// end point manager
 	private BinasEndpointManager endpointManager;
