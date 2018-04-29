@@ -89,6 +89,10 @@ public class StationPortImpl implements StationPortType {
      */
     @Override
     public String setBalance(String userEmail, TaggedBalance taggedBalance){
+        if(userEmail == null || userEmail.trim().isEmpty() || taggedBalance == null){
+            return null;
+        }
+
         User user;
         try{
             user =  UsersManager.getInstance().getUser(userEmail);
