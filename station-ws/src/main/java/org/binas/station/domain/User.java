@@ -6,19 +6,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class User {
     private String email;
     private AtomicInteger balance;
-    private String mostRecentTag;
+    private int mostRecentTag;
 
-    public User(String email, int initialBalance, String tag) {
+    public User(String email, int initialBalance, int tag) {
         this.email = email;
         balance = new AtomicInteger(initialBalance);
         this.mostRecentTag = tag;
     }
 
-    public String getMostRecentTag(){
+    public User(String email){
+        this.email = email;
+    }
+
+    public int getMostRecentTag(){
         return mostRecentTag;
     }
 
-    public void setMostRecentTag(String tag){
+    public void setMostRecentTag(int tag){
         this.mostRecentTag = tag;
     }
 

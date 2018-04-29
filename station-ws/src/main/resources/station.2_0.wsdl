@@ -40,7 +40,7 @@
             <xs:complexType name="taggedBalance">
                 <xs:sequence>
                     <xs:element name="value" type="xs:int" />
-                    <xs:element name="tag" type="xs:string" />
+                    <xs:element name="tag" type="xs:int" />
                 </xs:sequence>
             </xs:complexType>
 
@@ -325,8 +325,7 @@
                    message="tns:setBalance" />
             <output wsam:Action="http://ws.station.binas.org/Station/setBalanceResponse"
                     message="tns:setBalanceResponse" />
-            <fault message="tns:UserNotExist" name="UserNotExist"
-                   wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/UserNotExist" />
+
         </operation>
     </portType>
 
@@ -393,9 +392,7 @@
             <output>
                 <soap:body use="literal" />
             </output>
-            <fault name="UserNotExist">
-                <soap:fault name="UserNotExist" use="literal" />
-            </fault>
+
         </operation>
 
         <!-- test control operations -->
