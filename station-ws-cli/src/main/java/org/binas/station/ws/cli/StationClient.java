@@ -123,6 +123,11 @@ public class StationClient implements StationPortType {
         return port.getBalance(userEmail);
     }
 
+    @Override
+    public String setBalance(String userEmail, TaggedBalance taggedBalance) throws UserNotExist_Exception{
+        return port.setBalance(userEmail, taggedBalance);
+    }
+
 
     // test control operations ------------------------------------------------
 
