@@ -4,9 +4,12 @@ import javax.jws.WebService;
 
 import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
+import org.binas.station.domain.User;
+import org.binas.station.domain.UsersManager;
 import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
+import org.binas.station.domain.exception.UserNotFoundException;
 
 /**
  * This class implements the Web Service port type (interface). The annotations
@@ -20,6 +23,8 @@ import org.binas.station.domain.exception.NoSlotAvailException;
             serviceName = "StationService"
 )
 public class StationPortImpl implements StationPortType {
+
+    public StationPortImpl(){}
 
 	/**
 	 * The Endpoint manager controls the Web Service instance during its whole
@@ -59,7 +64,21 @@ public class StationPortImpl implements StationPortType {
 		return bonus;
 	}
 
-	/** Take a bike from the station. */
+    @Override
+    public GetBalanceResponseView getBalance(String userEmail) throws UserNotExist_Exception{
+        try{
+            User user =  UsersManager.getInstance().getUser(userEmail);
+
+            return buildGetBalanceResponseView(user);
+        } catch(UserNotFoundException e){
+            throwUserNotExist("User not found at this station!");
+        }
+        return null;
+    }
+
+
+
+    /** Take a bike from the station. */
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {
 		Station station = Station.getInstance();
@@ -130,6 +149,15 @@ public class StationPortImpl implements StationPortType {
 		view.setY(coordinates.getY());
 		return view;
 	}
+
+    /** Helper to convert a email,balance user to a UserView containing a tag and a value. */
+	private GetBalanceResponseView buildGetBalanceResponseView(User user){
+        GetBalanceResponseView balanceResponseView = new GetBalanceResponseView();
+        balanceResponseView.setValue(user.getBalance());
+        balanceResponseView.setTag(user.getMostRecentTag());
+
+        return balanceResponseView;
+    }
 	
 	// Exception helpers -----------------------------------------------------
 
@@ -153,5 +181,12 @@ public class StationPortImpl implements StationPortType {
 		faultInfo.message = message;
 		throw new BadInit_Exception(message, faultInfo);
 	}
+
+    /** Helper to throw a new UserNOtExist exception. */
+    private void throwUserNotExist(final String message) throws UserNotExist_Exception{
+	    UserNotExist faultInfo = new UserNotExist();
+	    faultInfo.message = message;
+	    throw new UserNotExist_Exception(message, faultInfo);
+    }
 
 }

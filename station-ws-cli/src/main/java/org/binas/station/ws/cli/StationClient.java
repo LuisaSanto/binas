@@ -5,13 +5,9 @@ import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import java.util.Map;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Holder;
 
-import org.binas.station.ws.BadInit_Exception;
-import org.binas.station.ws.NoBinaAvail_Exception;
-import org.binas.station.ws.NoSlotAvail_Exception;
-import org.binas.station.ws.StationPortType;
-import org.binas.station.ws.StationService;
-import org.binas.station.ws.StationView;
+import org.binas.station.ws.*;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
@@ -122,7 +118,13 @@ public class StationClient implements StationPortType {
 		return port.returnBina();
 	}
 
-	// test control operations ------------------------------------------------
+    @Override
+    public GetBalanceResponseView getBalance(String userEmail) throws UserNotExist_Exception{
+        return port.getBalance(userEmail);
+    }
+    
+
+    // test control operations ------------------------------------------------
 
 	@Override
 	public String testPing(String inputMessage) {
