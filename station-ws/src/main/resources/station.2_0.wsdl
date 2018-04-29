@@ -39,7 +39,7 @@
 
             <xs:complexType name="taggedBalance">
                 <xs:sequence>
-                    <xs:element name="value" type="xs:double" />
+                    <xs:element name="value" type="xs:int" />
                     <xs:element name="tag" type="xs:string" />
                 </xs:sequence>
             </xs:complexType>
@@ -120,9 +120,15 @@
             <xs:complexType name="setBalance">
                 <xs:sequence>
                     <xs:element name="user_email" type="xs:string" />
+                    <xs:element name="taggedBalance" type="tns:taggedBalance" />
                 </xs:sequence>
             </xs:complexType>
             <xs:element name="setBalance" type="tns:setBalance" />
+
+            <xs:complexType name="setBalanceResponse">
+                <xs:element name="ack" type="xs:string" />
+            </xs:complexType>
+            <xs:element name="setBalanceResponse" type="tns:setBalanceResponse" />
 
             <!-- test control operations data types -->
 
@@ -218,6 +224,13 @@
         <part name="fault" element="tns:UserNotExist" />
     </message>
 
+    <message name="setBalance">
+        <part name="parameters" element="tns:setBalance" />
+    </message>
+    <message name="setBalanceResponse">
+        <part name="parameters" element="tns:setBalanceResponse" />
+    </message>
+
     <!-- test control messages -->
     <message name="test_ping">
         <part name="parameters" element="tns:test_ping" />
@@ -306,6 +319,15 @@
             <fault message="tns:UserNotExist" name="UserNotExist"
                    wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/UserNotExist" />
         </operation>
+
+        <operation name="setBalance">
+            <input wsam:Action="http://ws.station.binas.org/Station/setBalanceRequest"
+                   message="tns:setBalance" />
+            <output wsam:Action="http://ws.station.binas.org/Station/setBalanceResponse"
+                    message="tns:setBalanceResponse" />
+            <fault message="tns:UserNotExist" name="UserNotExist"
+                   wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/UserNotExist" />
+        </operation>
     </portType>
 
     <!-- SOAP/HTTP Binding -->
@@ -351,6 +373,19 @@
         </operation>
 
         <operation name="getBalance">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="UserNotExist">
+                <soap:fault name="UserNotExist" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="setBalance">
             <soap:operation soapAction="" />
             <input>
                 <soap:body use="literal" />

@@ -64,6 +64,12 @@ public class StationPortImpl implements StationPortType {
 		return bonus;
 	}
 
+    /**
+     * Get balance of a user in this station
+     * @param userEmail user email
+     * @return TaggedBalance data transfer object with a tag and value
+     * @throws UserNotExist_Exception
+     */
     @Override
     public TaggedBalance getBalance(String userEmail) throws UserNotExist_Exception{
         try{
@@ -76,6 +82,25 @@ public class StationPortImpl implements StationPortType {
         return null;
     }
 
+    /**
+     * Set the balance of a user in this station
+     * @param userEmail email of user
+     * @param taggedBalance data transfer object with a tag, and a value
+     * @throws UserNotExist_Exception
+     */
+    @Override
+    public String setBalance(String userEmail, TaggedBalance taggedBalance) throws UserNotExist_Exception{
+        try{
+            User user =  UsersManager.getInstance().getUser(userEmail);
+            user.setBalance(taggedBalance.getValue());
+            user.setMostRecentTag(taggedBalance.getTag());
+
+            return "ack";
+        } catch(UserNotFoundException e){
+            throwUserNotExist("User not found at this station!");
+        }
+        return null;
+    }
 
 
     /** Take a bike from the station. */
