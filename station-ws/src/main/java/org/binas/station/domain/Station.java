@@ -73,6 +73,8 @@ public class Station {
  		
 		totalGets.set(0);
 		totalReturns.set(0);
+
+		UsersManager.getInstance().clearUsers();
 	}
  	
  	public void setId(String id) {

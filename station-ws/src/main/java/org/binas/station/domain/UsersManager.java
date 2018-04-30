@@ -16,7 +16,8 @@ public class UsersManager {
 	private UsersManager() {
 	}
 
-	/**
+
+    /**
 	 * SingletonHolder is loaded on the first execution of
 	 * Singleton.getInstance() or the first access to SingletonHolder.INSTANCE,
 	 * not before.
@@ -52,7 +53,12 @@ public class UsersManager {
 		return user;
 	}
 
-	public synchronized void reset() {
+    public void clearUsers(){
+	    registeredUsers.clear();
+    }
+
+
+    public synchronized void reset() {
 		registeredUsers.clear();
 	}
 
