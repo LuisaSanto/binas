@@ -88,9 +88,9 @@ public class StationPortImpl implements StationPortType {
      * @param taggedBalance data transfer object with a tag, and a value
      */
     @Override
-    public String setBalance(String userEmail, TaggedBalance taggedBalance){
+    public void setBalance(String userEmail, TaggedBalance taggedBalance){
         if(userEmail == null || userEmail.trim().isEmpty() || taggedBalance == null){
-            return null;
+            return;
         }
 
         User user;
@@ -104,8 +104,6 @@ public class StationPortImpl implements StationPortType {
             user = new User(userEmail, taggedBalance.getValue(), taggedBalance.getTag());
             UsersManager.getInstance().addUser(user);
         }
-
-        return "ack";
     }
 
 
