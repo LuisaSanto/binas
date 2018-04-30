@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.binas.domain.exception.InvalidEmailException;
 import org.binas.domain.exception.UserAlreadyExistsException;
 import org.binas.domain.exception.UserNotFoundException;
+import org.binas.station.ws.cli.StationClient;
+
 /**
  * Class that manages the Registration and maintenance of Users
  *
@@ -18,7 +20,9 @@ public class UsersManager {
 	private UsersManager() {
 	}
 
-	/**
+
+
+    /**
 	 * SingletonHolder is loaded on the first execution of
 	 * Singleton.getInstance() or the first access to SingletonHolder.INSTANCE,
 	 * not before.
@@ -43,8 +47,6 @@ public class UsersManager {
 	 */
 	private Map<String, User> registeredUsers = new ConcurrentHashMap<>();
 
-	
-	
 	public User getUser(String email) throws UserNotFoundException{
 		User user = registeredUsers.get(email);
 		if(user == null) {
