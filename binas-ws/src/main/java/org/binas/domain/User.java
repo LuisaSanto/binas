@@ -85,8 +85,7 @@ public class User {
 
                 stationClient.setBalance(this.email, newTaggedBalance);
             } catch(StationClientException e){
-                // TODO
-                e.printStackTrace();
+                System.out.println("Problem setting user " + this.email + " balance in stations");
             }
         }
     }
@@ -139,11 +138,9 @@ public class User {
                 stationClient = new StationClient(stationId);
                 taggedBalances.add(stationClient.getBalance(this.email));
             } catch(StationClientException e){
-                e.printStackTrace();
-                // TODO
+                System.out.println("Problem retrieving user " + this.email + " balance from stations");
             } catch(UserNotExist_Exception e){
-                e.printStackTrace();
-                // TODO
+                System.out.println("Failed to retrieve user balance, user is not registered in the stations");
             }
         }
 
