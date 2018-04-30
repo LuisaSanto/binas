@@ -22,18 +22,17 @@ import org.binas.station.ws.cli.StationClientException;
 public class User {
 
 	private String email;
-	private AtomicInteger balance;
 	private AtomicBoolean hasBina = new AtomicBoolean(false);
 	
 	public User(String email, int initialBalance) {
 		this.email = email;
-
-
 	}
 	
 	public synchronized void decrementBalance() throws InsufficientCreditsException{
-		 if(balance.get() > 0) {
-			 balance.decrementAndGet();
+		int currentUserBalance = getCredit();
+
+	    if(currentUserBalance > 0) {
+			 setCredit(currentUserBalance-1);
 		 } else {
 			 throw new InsufficientCreditsException();
 		 }
@@ -41,7 +40,10 @@ public class User {
 
 	
 	public synchronized void incrementBalance(int amount){
-		 balance.getAndAdd(amount);
+        int currentUserBalance = getCredit();
+
+        if(amount > 0 )
+            setCredit(currentUserBalance + amount);
 	}
 	
 	public String getEmail() {
