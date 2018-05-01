@@ -2,6 +2,7 @@ package org.binas.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.binas.domain.exception.BadInitException;
@@ -117,8 +118,9 @@ public class BinasManager {
 		
 		throw new StationNotFoundException();
 	}
-	
-	
+
+
+
 	// UDDI ------------------------------------------------------------------
 
 	public void initUddiURL(String uddiURL) {
@@ -162,6 +164,19 @@ public class BinasManager {
 		}
 		return stations;
 	}
+
+    public Collection<String> getStationsUrl() {
+        Collection<UDDIRecord> records = null;
+        Collection<String> stations = new ArrayList<String>();
+        try {
+            UDDINaming uddi = new UDDINaming(uddiURL);
+            records = uddi.listRecords(stationTemplateName + "%");
+            for (UDDIRecord u : records)
+                stations.add(u.getUrl());
+        } catch (UDDINamingException e) {
+        }
+        return stations;
+    }
 
 	public void reset() {
 		UsersManager.getInstance().reset();

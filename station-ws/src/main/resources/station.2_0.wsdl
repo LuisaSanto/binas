@@ -123,6 +123,9 @@
             <xs:element name="setBalance" type="tns:setBalance" />
 
             <xs:complexType name="setBalanceResponse">
+                <xs:sequence>
+                    <xs:element name="ack" type="xs:string" />
+                </xs:sequence>
             </xs:complexType>
             <xs:element name="setBalanceResponse" type="tns:setBalanceResponse" />
 

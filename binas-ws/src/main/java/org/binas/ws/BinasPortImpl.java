@@ -90,10 +90,10 @@ public class BinasPortImpl implements BinasPortType {
 		String uddiUrl = BinasManager.getInstance().getUddiURL();
 		StationClient sc = null;
 		org.binas.station.ws.StationView sv = null;
-		
+
 		if(numberOfStations <= 0 || coordinates == null)
 			return stationViews;
-		
+
 		for (String s : stations) {
 			try {
 				sc = new StationClient(uddiUrl, s);
@@ -104,7 +104,7 @@ public class BinasPortImpl implements BinasPortType {
 			}
 		}
 		Collections.sort(stationViews, new StationsComparator(coordinates));
-		
+
 		if(numberOfStations > stationViews.size())
 			return stationViews;
 		else
