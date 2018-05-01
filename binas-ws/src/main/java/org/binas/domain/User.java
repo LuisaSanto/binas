@@ -35,7 +35,7 @@ public class User {
 
 	public User(String email){
 	    this.email = email;
-	    setCredit(UsersManager.DEFAULT_INITIAL_BALANCE);
+	    setCredit(UsersManager.getInstance().initialBalance.get());
     }
 	
 	public synchronized void decrementBalance() throws InsufficientCreditsException{
