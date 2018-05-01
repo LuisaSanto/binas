@@ -41,24 +41,24 @@ public class SetBalanceIT extends BaseIT{
     }
 
     @Test
-    public void nullTaggedBalance(){
+    public void nullTaggedBalance() throws ExecutionException, InterruptedException {
         TaggedBalance taggedBalance = null;
         client.setBalance(userEmail, taggedBalance);
 
         Response<SetBalanceResponse> response = client.setBalanceAsync(userEmail, taggedBalance);
-        Assert.assertNull(response);
+        Assert.assertNull(response.get().getAck());
     }
 
     @Test
-    public void nullEmail(){
+    public void nullEmail() throws ExecutionException, InterruptedException {
         Response<SetBalanceResponse> response = client.setBalanceAsync(null, taggedBalance);
-        Assert.assertNull(response);
+        Assert.assertNull(response.get().getAck());
     }
 
     @Test
-    public void emptyEmail(){
+    public void emptyEmail() throws ExecutionException, InterruptedException {
         Response<SetBalanceResponse> response = client.setBalanceAsync("", taggedBalance);
-        Assert.assertNull(response);
+        Assert.assertNull(response.get().getAck());
     }
 
 
