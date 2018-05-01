@@ -37,6 +37,7 @@ public class ActivateUserIT extends BaseIT  {
 	public void createUserValidTest() throws EmailExists_Exception, InvalidEmail_Exception, UserNotExists_Exception{
 		client.activateUser(VALID_USER);
 		assertEquals(USER_POINTS, client.getCredit(VALID_USER));
+
 	}
 		 
 	@Test

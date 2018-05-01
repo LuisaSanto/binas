@@ -36,9 +36,8 @@ public class SetBalanceIT extends BaseIT{
     @Test
     public void nullTaggedBalance(){
         TaggedBalance taggedBalance = null;
+        client.setBalance(userEmail, taggedBalance);
 
-        //String response = client.setBalance(userEmail, taggedBalance);
-        //Assert.assertNull(response);
     }
 
     @Test
