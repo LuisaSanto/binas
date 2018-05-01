@@ -169,6 +169,16 @@ public class StationClient implements StationPortType {
     }
 
     @Override
+    public Response<SetBalanceResponse> setBalanceAsync(String userEmail, TaggedBalance taggedBalance){
+        return null;
+    }
+
+    @Override
+    public Future<?> setBalanceAsync(String userEmail, TaggedBalance taggedBalance, AsyncHandler<SetBalanceResponse> asyncHandler){
+        return null;
+    }
+
+    @Override
     public void setBalance(String userEmail, TaggedBalance taggedBalance){
 		port.setBalance(userEmail, taggedBalance);
     }

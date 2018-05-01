@@ -122,6 +122,10 @@
             </xs:complexType>
             <xs:element name="setBalance" type="tns:setBalance" />
 
+            <xs:complexType name="setBalanceResponse">
+            </xs:complexType>
+            <xs:element name="setBalanceResponse" type="tns:setBalanceResponse" />
+
             <!-- test control operations data types -->
 
             <xs:complexType name="test_ping">
@@ -220,6 +224,10 @@
         <part name="parameters" element="tns:setBalance" />
     </message>
 
+    <message name="setBalanceResponse">
+        <part name="parameters" element="tns:setBalanceResponse" />
+    </message>
+
 
     <!-- test control messages -->
     <message name="test_ping">
@@ -289,6 +297,8 @@
         <operation name="setBalance">
             <input wsam:Action="http://ws.station.binas.org/Station/setBalanceRequest"
                    message="tns:setBalance" />
+            <output wsam:Action="http://ws.station.binas.org/Station/setBalanceResponse"
+                    message="tns:setBalanceResponse" />
 
         </operation>
 
