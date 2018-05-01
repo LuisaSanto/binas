@@ -108,7 +108,7 @@ public class StationClient implements StationPortType {
 
 	@Override
 	public Response<GetInfoResponse> getInfoAsync() {
-		return null;
+		return port.getInfoAsync();
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class StationClient implements StationPortType {
 
 	@Override
 	public Response<GetBinaResponse> getBinaAsync() {
-		return null;
+		return port.getBinaAsync();
 	}
 
 	@Override
@@ -138,12 +138,11 @@ public class StationClient implements StationPortType {
 
 	@Override
 	public Response<ReturnBinaResponse> returnBinaAsync() {
-		return null;
+		return port.returnBinaAsync();
 	}
 
 	@Override
 	public Future<?> returnBinaAsync(AsyncHandler<ReturnBinaResponse> asyncHandler) {
-
 		return null;
 	}
 
@@ -170,7 +169,8 @@ public class StationClient implements StationPortType {
 
     @Override
     public Response<SetBalanceResponse> setBalanceAsync(String userEmail, TaggedBalance taggedBalance){
-        return null;
+		// Async operation with polling
+		return port.setBalanceAsync(userEmail, taggedBalance);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class StationClient implements StationPortType {
 	@Override
 	public Response<TestPingResponse> testPingAsync(String inputMessage) {
 		// Async operation with polling
-		return null;
+		return port.testPingAsync(inputMessage);
 	}
 
 	@Override

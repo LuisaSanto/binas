@@ -9,6 +9,7 @@ import org.binas.domain.exception.InsufficientCreditsException;
 import org.binas.domain.exception.UserAlreadyHasBinaException;
 import org.binas.domain.exception.UserHasNoBinaException;
 import org.binas.station.ws.GetBalanceResponse;
+import org.binas.station.ws.SetBalanceResponse;
 import org.binas.station.ws.TaggedBalance;
 import org.binas.station.ws.UserNotExist_Exception;
 import org.binas.station.ws.cli.StationClient;
@@ -82,14 +83,19 @@ public class User {
      */
     private void updateReplicatedStationBalances(TaggedBalance newTaggedBalance){
         Collection<String> stations = BinasManager.getInstance().getStations();
-        StationClient stationClient = null;
+        StationClient stationClient;
+        Response<SetBalanceResponse> response;
+        int count = 6;
 
         // for each station, set this user's balance
         for(String stationId : stations){
             try{
                 stationClient = new StationClient(stationId);
-
-                stationClient.setBalance(this.email, newTaggedBalance);
+                do {
+                    response = stationClient.setBalanceAsync(this.email, newTaggedBalance);
+                    stationClient.setBalanceAsync(this.email, newTaggedBalance);
+                    count --;
+                } while(response == null && count > 0);
             } catch(StationClientException e){
                 System.out.println("Problem setting user " + this.email + " balance in stations");
             }
