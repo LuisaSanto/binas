@@ -2,15 +2,19 @@ package org.binas.domain;
 
 import java.util.Collection;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.binas.domain.exception.InsufficientCreditsException;
 import org.binas.domain.exception.UserAlreadyHasBinaException;
 import org.binas.domain.exception.UserHasNoBinaException;
+import org.binas.station.ws.GetBalanceResponse;
 import org.binas.station.ws.TaggedBalance;
 import org.binas.station.ws.UserNotExist_Exception;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
+
+import javax.xml.ws.Response;
 
 /**
  * 
@@ -135,18 +139,27 @@ public class User {
 
 	private Vector<TaggedBalance> getUserBalanceFromAllStations(){
         Collection<String> stations = BinasManager.getInstance().getStations();
-        StationClient stationClient = null;
+        StationClient stationClient;
 	    Vector<TaggedBalance> taggedBalances = new Vector<>();
 
         // for each station, add the taggedBalance to a vector for later comparison for Quorum Consensus
         for(String stationId : stations){
             try{
                 stationClient = new StationClient(stationId);
-                taggedBalances.add(stationClient.getBalance(this.email));
+                //call async method
+                Response<GetBalanceResponse> response = stationClient.getBalanceAsync(this.email);
+                //get taggedbalance from async method
+                taggedBalances.add(response.get().getUserView());
             } catch(StationClientException e){
                 System.out.println("Problem retrieving user " + this.email + " balance from stations");
-            } catch(UserNotExist_Exception e){
-                System.out.println("Failed to retrieve user balance, user is not registered in the stations");
+            } catch (InterruptedException e) {
+                System.out.println("Caught interrupted exception.");
+                System.out.print("Cause: ");
+                System.out.println(e.getCause());
+            } catch (ExecutionException e) {
+                System.out.println("Caught execution exception.");
+                System.out.print("Cause: ");
+                System.out.println(e.getCause());
             }
         }
 

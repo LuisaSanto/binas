@@ -3,9 +3,12 @@ package org.binas.station.ws.cli;
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 
+import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
+import javax.xml.ws.Response;
 
 import org.binas.station.ws.*;
 
@@ -104,8 +107,28 @@ public class StationClient implements StationPortType {
 	// remote invocation methods ----------------------------------------------
 
 	@Override
+	public Response<GetInfoResponse> getInfoAsync() {
+		return null;
+	}
+
+	@Override
+	public Future<?> getInfoAsync(AsyncHandler<GetInfoResponse> asyncHandler) {
+		return null;
+	}
+
+	@Override
 	public StationView getInfo() {
 		return port.getInfo();
+	}
+
+	@Override
+	public Response<GetBinaResponse> getBinaAsync() {
+		return null;
+	}
+
+	@Override
+	public Future<?> getBinaAsync(AsyncHandler<GetBinaResponse> asyncHandler) {
+		return null;
 	}
 
 	@Override
@@ -114,22 +137,56 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
+	public Response<ReturnBinaResponse> returnBinaAsync() {
+		return null;
+	}
+
+	@Override
+	public Future<?> returnBinaAsync(AsyncHandler<ReturnBinaResponse> asyncHandler) {
+
+		return null;
+	}
+
+	@Override
 	public int returnBina() throws NoSlotAvail_Exception {
 		return port.returnBina();
 	}
 
-    @Override
+	@Override
+	public Response<GetBalanceResponse> getBalanceAsync(String userEmail) {
+		// Async operation with polling
+		return port.getBalanceAsync(userEmail);
+	}
+
+	@Override
+	public Future<?> getBalanceAsync(String userEmail, AsyncHandler<GetBalanceResponse> asyncHandler) {
+		return null;
+	}
+
+	@Override
     public TaggedBalance getBalance(String userEmail) throws UserNotExist_Exception{
         return port.getBalance(userEmail);
     }
 
     @Override
     public void setBalance(String userEmail, TaggedBalance taggedBalance){
-        port.setBalance(userEmail, taggedBalance);
+		port.setBalance(userEmail, taggedBalance);
     }
 
 
-    // test control operations ------------------------------------------------
+	@Override
+	public Response<TestPingResponse> testPingAsync(String inputMessage) {
+		// Async operation with polling
+		return null;
+	}
+
+	@Override
+	public Future<?> testPingAsync(String inputMessage, AsyncHandler<TestPingResponse> asyncHandler) {
+		return null;
+	}
+
+
+	// test control operations ------------------------------------------------
 
 	@Override
 	public String testPing(String inputMessage) {
@@ -137,8 +194,28 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
+	public Response<TestClearResponse> testClearAsync() {
+		return null;
+	}
+
+	@Override
+	public Future<?> testClearAsync(AsyncHandler<TestClearResponse> asyncHandler) {
+		return null;
+	}
+
+	@Override
 	public void testClear() {
 		port.testClear();
+	}
+
+	@Override
+	public Response<TestInitResponse> testInitAsync(int x, int y, int capacity, int returnPrize) {
+		return null;
+	}
+
+	@Override
+	public Future<?> testInitAsync(int x, int y, int capacity, int returnPrize, AsyncHandler<TestInitResponse> asyncHandler) {
+		return null;
 	}
 
 	@Override
