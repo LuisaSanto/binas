@@ -140,6 +140,13 @@ public class User {
 
         }
 
+        //write back
+        for(TaggedBalance tb : taggedBalances){
+            if(tb.getTag() != taggedBalances.get(mostCommonTaggedBalanceIndex).getTag()){
+                updateReplicatedStationBalances(taggedBalances.get(mostCommonTaggedBalanceIndex));
+            }
+        }
+
         return taggedBalances.get(mostCommonTaggedBalanceIndex);
     }
 
