@@ -8,12 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.ws.Response;
-
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.TestCase.fail;
 
-public class SetBalanceIT extends BaseIT{
+public class GetBalanceIT extends BaseIT{
     final String userEmail = "someone@email";
     final TaggedBalance taggedBalance = new TaggedBalance();
     final int value = 2;
@@ -26,7 +25,7 @@ public class SetBalanceIT extends BaseIT{
 
     @Test
     public void success(){
-        client.setBalanceAsync(userEmail, taggedBalance);
+        client.setBalance(userEmail, taggedBalance);
 
 
         try{
@@ -41,23 +40,14 @@ public class SetBalanceIT extends BaseIT{
     }
 
     @Test
-    public void nullTaggedBalance(){
-        TaggedBalance taggedBalance = null;
-        client.setBalance(userEmail, taggedBalance);
-
-        Response<SetBalanceResponse> response = client.setBalanceAsync(userEmail, taggedBalance);
-        Assert.assertNull(response);
-    }
-
-    @Test
     public void nullEmail(){
-        Response<SetBalanceResponse> response = client.setBalanceAsync(null, taggedBalance);
+        Response<GetBalanceResponse> response = client.getBalanceAsync(null);
         Assert.assertNull(response);
     }
 
     @Test
     public void emptyEmail(){
-        Response<SetBalanceResponse> response = client.setBalanceAsync("", taggedBalance);
+        Response<GetBalanceResponse> response = client.getBalanceAsync("");
         Assert.assertNull(response);
     }
 
