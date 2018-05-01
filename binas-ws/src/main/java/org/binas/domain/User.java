@@ -107,6 +107,7 @@ public class User {
 
 	private TaggedBalance getMostCommonTaggedBalance(Vector<TaggedBalance> taggedBalances){
         int mostCommonTaggedBalanceIndex = 0;
+        int maxCount = 0;
         int count = 0;
 
         // Compare each balance with every balance in taggedBalances, and count number of occurences of each tag
@@ -118,12 +119,13 @@ public class User {
                 }
             }
 
-            // update mostCommonTaggedBalanceIndex with the most common tag's respective vector index
-            if(count > mostCommonTaggedBalanceIndex){
-                mostCommonTaggedBalanceIndex = count;
+            if(count > maxCount){
+                mostCommonTaggedBalanceIndex = taggedBalances.indexOf(tb1);
+                maxCount = count;
             }else{
                 count = 0;
             }
+
         }
 
         return taggedBalances.get(mostCommonTaggedBalanceIndex);
