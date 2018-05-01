@@ -3,7 +3,6 @@ package org.binas.domain;
 import java.util.Collection;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.binas.domain.exception.InsufficientCreditsException;
 import org.binas.domain.exception.UserAlreadyHasBinaException;
@@ -26,13 +25,14 @@ public class User {
 	
 	public User(String email, int initialBalance) {
 		this.email = email;
+		setCredit(initialBalance);
 	}
 	
 	public synchronized void decrementBalance() throws InsufficientCreditsException{
 		int currentUserBalance = getCredit();
 
 	    if(currentUserBalance > 0) {
-			 setCredit(currentUserBalance-1);
+			 setCredit(currentUserBalance - 1);
 		 } else {
 			 throw new InsufficientCreditsException();
 		 }
@@ -42,7 +42,7 @@ public class User {
 	public synchronized void incrementBalance(int amount){
         int currentUserBalance = getCredit();
 
-        if(amount > 0 )
+        if( amount > 0 )
             setCredit(currentUserBalance + amount);
 	}
 	
