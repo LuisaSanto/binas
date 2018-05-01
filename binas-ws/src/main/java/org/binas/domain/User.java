@@ -99,8 +99,10 @@ public class User {
      */
 	public int getCredit() {
 		Vector<TaggedBalance> taggedBalances = getUserBalanceFromAllStations();
-
 		TaggedBalance taggedBalance = getMostCommonTaggedBalance(taggedBalances);
+
+		// Write back to stations
+        setCredit(taggedBalance.getValue());
 
 		return taggedBalance.getValue();
 	}
