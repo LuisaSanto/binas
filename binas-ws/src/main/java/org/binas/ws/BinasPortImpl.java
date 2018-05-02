@@ -49,9 +49,9 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	@Override
-	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception, UserNotExists_Exception {
+	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception{
 		try {
-			User user = BinasManager.getInstance().createUser(email);
+			User user = UsersManager.getInstance().RegisterNewUser(email);
 			
 			//Create and populate userView
 			UserView userView = new UserView();
@@ -63,10 +63,8 @@ public class BinasPortImpl implements BinasPortType {
 			throwEmailExists("Email already exists: " + email);
 		} catch (InvalidEmailException e) {
 			throwInvalidEmail("Invalid email: " + email);
-		} catch (UserNotFoundException e) {
-			throwUserNotExists("User not exist: " + email);
 		}
-		return null;
+        return null;
 	}
 
 	@Override
@@ -116,7 +114,7 @@ public class BinasPortImpl implements BinasPortType {
 	@Override
 	public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception,
 			NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
-		
+
 		try {
 			BinasManager.getInstance().rentBina(stationId,email);
 		} catch (UserNotFoundException e) {
