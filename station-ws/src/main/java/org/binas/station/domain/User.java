@@ -16,6 +16,8 @@ public class User {
 
     public User(String email){
         this.email = email;
+        balance = UsersManager.getInstance().initialBalance;
+        mostRecentTag = 0;
     }
 
     public int getMostRecentTag(){
