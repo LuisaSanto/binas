@@ -3,6 +3,7 @@ package org.binas.station.ws.it;
 import org.binas.station.ws.GetBalanceResponse;
 import org.binas.station.ws.SetBalanceResponse;
 import org.binas.station.ws.TaggedBalance;
+import org.binas.station.ws.UserNotExist_Exception;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,29 +28,27 @@ public class GetBalanceIT extends BaseIT{
     public void success(){
         client.setBalance(userEmail, taggedBalance);
 
-
         try{
             Response<GetBalanceResponse> responseTaggedBalance = client.getBalanceAsync(userEmail);
-            int value = 0;
-            value = responseTaggedBalance.get().getUserView().getValue();
-            Assert.assertEquals(value, value);
+            Assert.assertEquals(taggedBalance.getValue(), responseTaggedBalance.get().getTaggedBalance().getValue());
 
         } catch (InterruptedException | ExecutionException e) {
             fail();
         }
     }
 
-    @Test
-    public void nullEmail(){
+    @Test(expected = ExecutionException.class)
+    public void userNotExists() throws ExecutionException, InterruptedException{
         Response<GetBalanceResponse> response = client.getBalanceAsync(null);
-        Assert.assertNull(response);
+
+        // ask 10 times, if not done by then fail
+        pollResponse(response);
+
+        // trigger the UserNotExists_Exception received in the SOAP as ExecutionException
+        response.get();
     }
 
-    @Test
-    public void emptyEmail(){
-        Response<GetBalanceResponse> response = client.getBalanceAsync("");
-        Assert.assertNull(response);
-    }
+
 
 
 }

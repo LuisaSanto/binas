@@ -7,6 +7,10 @@ import org.binas.station.ws.cli.StationClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import javax.xml.ws.Response;
+
+import static junit.framework.TestCase.fail;
+
 /**
  * Base class for testing a station Load properties from test.properties
  */
@@ -48,5 +52,23 @@ public class BaseIT {
 	@AfterClass
 	public static void cleanup() {
 	}
+
+    /**
+     * Poll 10 times if response is ready, if not, fail
+     * @param response
+     */
+	protected void pollResponse(Response response){
+        for(int i = 10; !response.isDone(); i--){
+            try{
+                Thread.sleep(100);
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+
+            if(i == 0){
+                fail();
+            }
+        }
+    }
 
 }
