@@ -201,9 +201,6 @@ public class UsersManager {
         return taggedBalances;
     }
 
-
-
-
 	public User getUser(String email) throws UserNotFoundException{
 		User user = registeredUsers.get(email);
 		if(user == null) {
@@ -218,15 +215,26 @@ public class UsersManager {
 		}
 		
 		try {
-			getUser(email);
-			throw new UserAlreadyExistsException();
-			
+            Collection<String> stations = BinasManager.getInstance().getStationsUrl();
+            StationClient stationClient;
+
+            for(String station : stations){
+                stationClient = new StationClient(station);
+                stationClient.registerUser(email);
+            }
+
+
+			return getUser(email);
+
 		} catch (UserNotFoundException e) {
 			User user = new User(email,initialBalance.get());
 			registeredUsers.put(email, user);
 			return user;
-		}
-	}
+		} catch(StationClientException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 	
 	public synchronized void reset() {
 		registeredUsers.clear();

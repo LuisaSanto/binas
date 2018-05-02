@@ -72,6 +72,7 @@ public class StationPortImpl implements StationPortType {
      */
     @Override
     public TaggedBalance getBalance(String userEmail) throws UserNotExist_Exception{
+        System.out.println("called get balance");
         try{
             User user =  UsersManager.getInstance().getUser(userEmail);
 
