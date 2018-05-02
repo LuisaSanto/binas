@@ -4,6 +4,7 @@ import org.binas.station.ws.GetBalanceResponse;
 import org.binas.station.ws.SetBalanceResponse;
 import org.binas.station.ws.TaggedBalance;
 import org.binas.station.ws.UserNotExist_Exception;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,8 @@ public class GetBalanceIT extends BaseIT{
     public void setUp() throws Exception{
         taggedBalance.setTag(1);
         taggedBalance.setValue(value);
+
+        client.registerUser(userEmail);
     }
 
     @Test
@@ -52,7 +55,8 @@ public class GetBalanceIT extends BaseIT{
         response.get();
     }
 
-
-
-
+    @After
+    public void tearDown() throws Exception{
+        client.testClear();
+    }
 }
