@@ -213,35 +213,38 @@ public class UsersManager {
 		}
 	}
 	
-	public synchronized User RegisterNewUser(String email) throws UserAlreadyExistsException, InvalidEmailException, UserNotFoundException {
+	public synchronized User RegisterNewUser(String email) throws UserAlreadyExistsException, InvalidEmailException {
 		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*@\\w+(\\.?\\w)*")) {
 			throw new InvalidEmailException();
 		}
 
-		if(UsersManager.getInstance().getUser(email) != null){
-		    throw new UserAlreadyExistsException();
-        }
-		
-		try {
-            Collection<String> stations = BinasManager.getInstance().getStationsUrl();
-            StationClient stationClient;
+        try{
+            UsersManager.getInstance().getUser(email);
+            throw new UserAlreadyExistsException("User already exists while trying to register");
+        } catch(UserNotFoundException e){
 
-            for(String station : stations){
-                stationClient = new StationClient(station);
-                stationClient.registerUser(email);
+		    // since user has not been found, we can register a new user
+            try {
+                Collection<String> stations = BinasManager.getInstance().getStationsUrl();
+                StationClient stationClient;
+
+                for(String station : stations){
+                    stationClient = new StationClient(station);
+                    stationClient.registerUser(email);
+                }
+
+
+                return getUser(email);
+
+            } catch (UserNotFoundException e1) {
+                User user = new User(email,initialBalance.get());
+                registeredUsers.put(email, user);
+                return user;
+            } catch(StationClientException e2){
+                e2.printStackTrace();
             }
-
-
-			return getUser(email);
-
-		} catch (UserNotFoundException e) {
-			User user = new User(email,initialBalance.get());
-			registeredUsers.put(email, user);
-			return user;
-		} catch(StationClientException e){
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 	
 	public synchronized void reset() {
