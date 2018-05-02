@@ -174,7 +174,6 @@ public class UsersManager {
 
         // for each station, add the taggedBalance to a vector for later comparison for Quorum Consensus
         for(String stationId : stations){
-            System.out.println("STATION : " + stationId);
             try{
                 stationClient = new StationClient(stationId);
                 //call async method
@@ -203,11 +202,15 @@ public class UsersManager {
     }
 
 	public User getUser(String email) throws UserNotFoundException{
-		User user = registeredUsers.get(email);
-		if(user == null) {
+        if(email == null || email.trim().isEmpty()){
+            throw new UserNotFoundException();
+        }
+
+        if(registeredUsers.get(email) != null)
+		    return registeredUsers.get(email);
+		else{
 			throw new UserNotFoundException();
 		}
-		return user;
 	}
 	
 	public synchronized User RegisterNewUser(String email) throws UserAlreadyExistsException, InvalidEmailException {
