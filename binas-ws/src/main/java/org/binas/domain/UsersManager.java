@@ -57,6 +57,7 @@ public class UsersManager {
 	private Map<String, User> registeredUsers = new ConcurrentHashMap<>();
 
    public void setUserBalance(String email, int value){
+       System.out.println("calling setUserBalance in binas");
        // get the current tag of this user's balance
        Vector<TaggedBalance> taggedBalances = null;
        TaggedBalance taggedBalance;
@@ -108,7 +109,7 @@ public class UsersManager {
      * @param newTaggedBalance
      */
     private void updateUserBalanceInStations(String email, TaggedBalance newTaggedBalance){
-        Collection<String> stations = BinasManager.getInstance().getStations();
+        Collection<String> stations = BinasManager.getInstance().getStationsUrl();
         StationClient stationClient;
         Response<SetBalanceResponse> response;
         int count = 6;
