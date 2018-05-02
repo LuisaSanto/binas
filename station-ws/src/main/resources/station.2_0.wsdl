@@ -108,7 +108,7 @@
 
             <xs:complexType name="getBalanceResponse">
                 <xs:sequence>
-                	<xs:element name="userView" type="tns:taggedBalance" />
+                	<xs:element name="taggedBalance" type="tns:taggedBalance" />
 
                 </xs:sequence>
             </xs:complexType>

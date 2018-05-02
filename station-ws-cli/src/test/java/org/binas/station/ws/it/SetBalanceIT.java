@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.swing.text.html.HTML;
 import javax.xml.ws.Response;
 
 import java.util.concurrent.ExecutionException;
@@ -31,9 +32,7 @@ public class SetBalanceIT extends BaseIT{
 
         try{
             Response<GetBalanceResponse> responseTaggedBalance = client.getBalanceAsync(userEmail);
-            int value = 0;
-            value = responseTaggedBalance.get().getUserView().getValue();
-            Assert.assertEquals(value, value);
+            Assert.assertEquals(taggedBalance.getValue(), responseTaggedBalance.get().getTaggedBalance().getValue());
 
         } catch (InterruptedException | ExecutionException e) {
             fail();
@@ -42,24 +41,24 @@ public class SetBalanceIT extends BaseIT{
 
     @Test
     public void nullTaggedBalance() throws ExecutionException, InterruptedException {
-        TaggedBalance taggedBalance = null;
-        client.setBalance(userEmail, taggedBalance);
-
-        Response<SetBalanceResponse> response = client.setBalanceAsync(userEmail, taggedBalance);
+        Response<SetBalanceResponse> response = client.setBalanceAsync(userEmail, null);
         Assert.assertNull(response.get().getAck());
+
+        // TODO while !isDone , tenta varias vezes com sleep, passado o tempo falha
     }
 
-    @Test
-    public void nullEmail() throws ExecutionException, InterruptedException {
+    @Test(expected = ExecutionException.class)
+    public void userNotExists() throws ExecutionException, InterruptedException {
+        TaggedBalance taggedBalance = new TaggedBalance();
+        taggedBalance.setValue(0);
+        taggedBalance.setTag(0);
+
         Response<SetBalanceResponse> response = client.setBalanceAsync(null, taggedBalance);
-        Assert.assertNull(response.get().getAck());
+
+        // ask 10 times, if not done by then fail
+        pollResponse(response);
+
+        // trigger the UserNotExists_Exception received in the SOAP as ExecutionException
+        response.get();
     }
-
-    @Test
-    public void emptyEmail() throws ExecutionException, InterruptedException {
-        Response<SetBalanceResponse> response = client.setBalanceAsync("", taggedBalance);
-        Assert.assertNull(response.get().getAck());
-    }
-
-
 }

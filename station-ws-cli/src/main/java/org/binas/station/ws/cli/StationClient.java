@@ -7,7 +7,6 @@ import java.util.concurrent.Future;
 
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Holder;
 import javax.xml.ws.Response;
 
 import org.binas.station.ws.*;
@@ -179,8 +178,12 @@ public class StationClient implements StationPortType {
     }
 
     @Override
-    public void setBalance(String userEmail, TaggedBalance taggedBalance){
+    public String setBalance(String userEmail, TaggedBalance taggedBalance){
+	    // TODO return value
 		port.setBalance(userEmail, taggedBalance);
+
+		// temporary return
+		return "ack";
     }
 
 
