@@ -3,6 +3,7 @@ package org.binas.station.ws.it;
 import org.binas.station.ws.GetBalanceResponse;
 import org.binas.station.ws.SetBalanceResponse;
 import org.binas.station.ws.TaggedBalance;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,12 +24,13 @@ public class SetBalanceIT extends BaseIT{
     public void setUp() throws Exception{
         taggedBalance.setTag(1);
         taggedBalance.setValue(value);
+
+        client.registerUser(userEmail);
     }
 
     @Test
     public void success(){
         client.setBalanceAsync(userEmail, taggedBalance);
-
 
         try{
             Response<GetBalanceResponse> responseTaggedBalance = client.getBalanceAsync(userEmail);
@@ -59,5 +61,10 @@ public class SetBalanceIT extends BaseIT{
 
         // trigger the UserNotExists_Exception received in the SOAP as ExecutionException
         response.get();
+    }
+
+    @After
+    public void tearDown() throws Exception{
+        client.testClear();
     }
 }

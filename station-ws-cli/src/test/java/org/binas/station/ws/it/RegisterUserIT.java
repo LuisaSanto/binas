@@ -1,6 +1,7 @@
 package org.binas.station.ws.it;
 
 import org.binas.station.ws.RegisterUserResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,5 +19,10 @@ public class RegisterUserIT extends BaseIT {
         Response<RegisterUserResponse> response = client.registerUserAsync(userEmail);
         pollResponse(response);
         Assert.assertNotNull(response);
+    }
+
+    @After
+    public void tearDown() throws Exception{
+        client.testClear();
     }
 }
