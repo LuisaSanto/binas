@@ -556,6 +556,9 @@
             <output>
                 <soap:body use="literal" />
             </output>
+            <fault name="UserNotExists">
+                <soap:fault name="UserNotExists" use="literal" />
+            </fault>
         </operation>
 
         <operation name="activateUser">

@@ -34,7 +34,6 @@ public class GetInfoStationIT extends BaseIT  {
 	public static void oneTimeTearDown() {
 	}
 
-	// members
 
 	// initialization and clean-up for each test
 	@Before

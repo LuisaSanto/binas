@@ -149,23 +149,27 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public int getCredit(String email) throws UserNotExists_Exception {
-		try {
-			User user = BinasManager.getInstance().getUser(email);	
-			return user.getCredit();
-		} catch (UserNotFoundException e) {
-			throwUserNotExists("User not found: " + email);
-		}
-		return 0;
+        User user = null;
+        try{
+            user = BinasManager.getInstance().getUser(email);
+            return user.getCredit();
+        } catch(UserNotFoundException e){
+            e.printStackTrace();
+        }
+        return -1;
 	}
 
     @Override
     public void setCredit(String email, Integer credit) throws UserNotExists_Exception{
-        try {
-            User user = BinasManager.getInstance().getUser(email);
-            user.setCredit(credit);
-        } catch (UserNotFoundException e) {
-            throwUserNotExists("User not found: " + email);
+        User user = null;
+        try{
+            user = BinasManager.getInstance().getUser(email);
+        } catch(UserNotFoundException e){
+            e.printStackTrace();
         }
+        user.setCredit(credit);
+
+
     }
 
 

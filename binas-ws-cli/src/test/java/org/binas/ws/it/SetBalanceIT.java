@@ -1,19 +1,12 @@
 package org.binas.ws.it;
 
-import org.binas.station.ws.GetBalanceResponse;
-import org.binas.station.ws.SetBalanceResponse;
-import org.binas.station.ws.TaggedBalance;
 import org.binas.ws.UserNotExists_Exception;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.xml.ws.Response;
 
-import java.util.concurrent.ExecutionException;
-
-import static junit.framework.TestCase.fail;
 
 public class SetBalanceIT extends BaseIT{
     final String userEmail = "someone@email";
@@ -29,24 +22,23 @@ public class SetBalanceIT extends BaseIT{
     public void success(){
 
         try{
+            client.setCredit(userEmail, 2);
             int credit = client.getCredit(userEmail);
+            Assert.assertEquals(2, credit);
 
         } catch(UserNotExists_Exception e){
             e.printStackTrace();
         }
     }
 
+    @Test(expected = UserNotExists_Exception.class)
+    public void userNotExists1() throws UserNotExists_Exception{
+        client.setCredit(null, value);
+    }
 
-    @Test(expected = ExecutionException.class)
-    public void userNotExists() {
-        try{
-            client.setCredit(userEmail, value);
-            fail();
-        } catch(UserNotExists_Exception e){
-            e.printStackTrace();
-        }
-
-
+    @Test(expected = UserNotExists_Exception.class)
+    public void userNotExists2() throws UserNotExists_Exception{
+        client.setCredit("", value);
     }
 
 

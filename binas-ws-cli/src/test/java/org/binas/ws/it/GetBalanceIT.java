@@ -33,8 +33,13 @@ public class GetBalanceIT extends BaseIT{
     }
 
     @Test(expected = UserNotExists_Exception.class)
-    public void userNotExists() throws UserNotExists_Exception{
+    public void userNotExists1() throws UserNotExists_Exception{
         client.getCredit(null);
+
+    }
+
+    @Test(expected = UserNotExists_Exception.class)
+    public void userNotExists2() throws UserNotExists_Exception{
         client.getCredit("");
 
     }
