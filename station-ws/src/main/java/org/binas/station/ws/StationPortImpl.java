@@ -90,12 +90,12 @@ public class StationPortImpl implements StationPortType {
     @Override
     public void setBalance(String userEmail, TaggedBalance taggedBalance) throws UserNotExist_Exception{
         if(userEmail == null || userEmail.trim().isEmpty() || taggedBalance == null){
-            return ;
+            throwUserNotExist("User not found at this station!");
         }
         User user = null;
+        System.out.println("Calling setBalance on:" + userEmail);
         try{
             user =  UsersManager.getInstance().getUser(userEmail);
-            System.out.println("is user null : " + user == null);
 
             user.setBalance(taggedBalance.getValue());
             user.setMostRecentTag(taggedBalance.getTag());

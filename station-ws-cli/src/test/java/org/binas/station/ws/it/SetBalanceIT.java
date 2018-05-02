@@ -28,6 +28,7 @@ public class SetBalanceIT extends BaseIT{
         client.registerUser(userEmail);
     }
 
+
     @Test
     public void success(){
         client.setBalanceAsync(userEmail, taggedBalance);
@@ -41,12 +42,6 @@ public class SetBalanceIT extends BaseIT{
         }
     }
 
-    @Test
-    public void nullTaggedBalance() throws ExecutionException, InterruptedException {
-        Response<SetBalanceResponse> response = client.setBalanceAsync(userEmail, null);
-
-        // TODO
-    }
 
     @Test(expected = ExecutionException.class)
     public void userNotExists() throws ExecutionException, InterruptedException {
@@ -62,6 +57,7 @@ public class SetBalanceIT extends BaseIT{
         // trigger the UserNotExists_Exception received in the SOAP as ExecutionException
         response.get();
     }
+
 
     @After
     public void tearDown() throws Exception{
