@@ -154,7 +154,7 @@ public class BinasPortImpl implements BinasPortType {
             user = BinasManager.getInstance().getUser(email);
             return user.getCredit();
         } catch(UserNotFoundException e){
-            e.printStackTrace();
+            throwUserNotExists("User not exist in station");
         }
         return -1;
 	}
