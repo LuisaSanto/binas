@@ -178,16 +178,27 @@ public class StationClient implements StationPortType {
     }
 
     @Override
-    public String setBalance(String userEmail, TaggedBalance taggedBalance){
-	    // TODO return value
+    public void setBalance(String userEmail, TaggedBalance taggedBalance) throws UserNotExist_Exception{
 		port.setBalance(userEmail, taggedBalance);
+    }
 
-		// temporary return
-		return "ack";
+    @Override
+    public Response<RegisterUserResponse> registerUserAsync(String userEmail){
+        return port.registerUserAsync(userEmail);
+    }
+
+    @Override
+    public Future<?> registerUserAsync(String userEmail, AsyncHandler<RegisterUserResponse> asyncHandler){
+        return null;
+    }
+
+    @Override
+    public void registerUser(String userEmail) {
+        port.registerUser(userEmail);
     }
 
 
-	@Override
+    @Override
 	public Response<TestPingResponse> testPingAsync(String inputMessage) {
 		// Async operation with polling
 		return port.testPingAsync(inputMessage);

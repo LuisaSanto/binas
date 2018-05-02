@@ -26,7 +26,11 @@ public class GetBalanceIT extends BaseIT{
 
     @Test
     public void success(){
-        client.setBalance(userEmail, taggedBalance);
+        try{
+            client.setBalance(userEmail, taggedBalance);
+        } catch(UserNotExist_Exception e){
+            fail();
+        }
 
         try{
             Response<GetBalanceResponse> responseTaggedBalance = client.getBalanceAsync(userEmail);

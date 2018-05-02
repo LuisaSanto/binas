@@ -32,7 +32,10 @@ public class UsersManager {
 	
 	// ------------------------------------------------------------------------
 
-	
+
+    public static int DEFAULT_INITIAL_BALANCE = 10;
+    public AtomicInteger initialBalance = new AtomicInteger(DEFAULT_INITIAL_BALANCE);
+
 	/**
 	 * Map of existing users <email, User>. Uses concurrent hash table
 	 * implementation supporting full concurrency of retrievals and high

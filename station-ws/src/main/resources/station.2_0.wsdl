@@ -123,11 +123,20 @@
             <xs:element name="setBalance" type="tns:setBalance" />
 
             <xs:complexType name="setBalanceResponse">
-                <xs:sequence>
-                    <xs:element name="ack" type="xs:string" />
-                </xs:sequence>
             </xs:complexType>
             <xs:element name="setBalanceResponse" type="tns:setBalanceResponse" />
+
+            <xs:complexType name="registerUser">
+                <xs:sequence>
+                    <xs:element name="user_email" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="registerUser" type="tns:registerUser" />
+
+            <xs:complexType name="registerUserResponse">
+            </xs:complexType>
+            <xs:element name="registerUserResponse" type="tns:registerUserResponse" />
+
 
             <!-- test control operations data types -->
 
@@ -231,6 +240,13 @@
         <part name="parameters" element="tns:setBalanceResponse" />
     </message>
 
+    <message name="registerUser">
+        <part name="parameters" element="tns:registerUser" />
+    </message>
+
+    <message name="registerUserResponse">
+        <part name="parameters" element="tns:registerUserResponse" />
+    </message>
 
     <!-- test control messages -->
     <message name="test_ping">
@@ -302,7 +318,16 @@
                    message="tns:setBalance" />
             <output wsam:Action="http://ws.station.binas.org/Station/setBalanceResponse"
                     message="tns:setBalanceResponse" />
+            <fault message="tns:UserNotExist" name="UserNotExist"
+                   wsam:Action="http://ws.station.binas.org/Station/getBina/Fault/UserNotExist" />
 
+        </operation>
+
+        <operation name="registerUser">
+            <input wsam:Action="http://ws.station.binas.org/Station/registerUser"
+                   message="tns:registerUser" />
+            <output wsam:Action="http://ws.station.binas.org/Station/registerUserResposne"
+                    message="tns:registerUserResponse" />
         </operation>
 
         <!-- test control operations -->
@@ -388,6 +413,20 @@
         </operation>
 
         <operation name="setBalance">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="UserNotExist">
+                <soap:fault name="UserNotExist" use="literal" />
+            </fault>
+
+        </operation>
+
+        <operation name="registerUser">
             <soap:operation soapAction="" />
             <input>
                 <soap:body use="literal" />

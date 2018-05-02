@@ -42,9 +42,8 @@ public class SetBalanceIT extends BaseIT{
     @Test
     public void nullTaggedBalance() throws ExecutionException, InterruptedException {
         Response<SetBalanceResponse> response = client.setBalanceAsync(userEmail, null);
-        Assert.assertNull(response.get().getAck());
 
-        // TODO while !isDone , tenta varias vezes com sleep, passado o tempo falha
+        // TODO
     }
 
     @Test(expected = ExecutionException.class)
