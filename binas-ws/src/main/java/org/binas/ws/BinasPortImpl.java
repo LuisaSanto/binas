@@ -157,8 +157,19 @@ public class BinasPortImpl implements BinasPortType {
 		}
 		return 0;
 	}
-	
-	// Auxiliary operations --------------------------------------------------
+
+    @Override
+    public void setCredit(String email, Integer credit) throws UserNotExists_Exception{
+        try {
+            User user = BinasManager.getInstance().getUser(email);
+            user.setCredit(credit);
+        } catch (UserNotFoundException e) {
+            throwUserNotExists("User not found: " + email);
+        }
+    }
+
+
+    // Auxiliary operations --------------------------------------------------
 	
 	@Override
 	public String testPing(String inputMessage) {
