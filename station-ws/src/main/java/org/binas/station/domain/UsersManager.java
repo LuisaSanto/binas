@@ -49,11 +49,11 @@ public class UsersManager {
     }
 	
 	public User getUser(String email) throws UserNotFoundException{
-		User user = registeredUsers.get(email);
-		if(user == null) {
-			throw new UserNotFoundException();
-		}
-		return user;
+	    if(registeredUsers.containsKey(email)){
+	        return registeredUsers.get(email);
+        }else{
+            throw new UserNotFoundException();
+        }
 	}
 
     public void clearUsers(){
