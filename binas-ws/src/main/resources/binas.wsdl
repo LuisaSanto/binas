@@ -92,6 +92,20 @@
             </xs:complexType>
             <xs:element name="getCreditResponse" type="tns:getCreditResponse" />
 
+            <xs:complexType name="setCredit">
+                <xs:sequence>
+                    <xs:element name="email" type="xs:string" maxOccurs="1"
+                                minOccurs="0" />
+                    <xs:element name="credit" type="xs:int" maxOccurs="1"
+                                minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="setCredit" type="tns:setCredit" />
+
+            <xs:complexType name="setCreditResponse">
+            </xs:complexType>
+            <xs:element name="setCreditResponse" type="tns:setCreditResponse" />
+
 
             <xs:complexType name="activateUser">
                 <xs:sequence>
@@ -289,6 +303,13 @@
         <part name="parameters" element="tns:getCreditResponse" />
     </message>
 
+    <message name="setCredit">
+        <part name="parameters" element="tns:setCredit" />
+    </message>
+    <message name="setCreditResponse">
+        <part name="parameters" element="tns:setCreditResponse" />
+    </message>
+
     <message name="activateUser">
         <part name="parameters" element="tns:activateUser" />
     </message>
@@ -408,6 +429,15 @@
                 wsam:Action="http://ws.binas.org/Binas/getCredit/Fault/UserNotExists" />
         </operation>
 
+        <operation name="setCredit">
+            <input wsam:Action="http://ws.binas.org/Binas/setCreditRequest"
+                   message="tns:setCredit" />
+            <output wsam:Action="http://ws.binas.org/Binas/setCreditResponse"
+                    message="tns:setCreditResponse" />
+            <fault message="tns:UserNotExists" name="UserNotExists"
+                   wsam:Action="http://ws.binas.org/Binas/getCredit/Fault/UserNotExists" />
+        </operation>
+
         <operation name="activateUser">
             <input wsam:Action="http://ws.binas.org/Binas/activateUserRequest"
                 message="tns:activateUser" />
@@ -516,6 +546,16 @@
             <fault name="UserNotExists">
                 <soap:fault name="UserNotExists" use="literal" />
             </fault>
+        </operation>
+
+        <operation name="setCredit">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
         </operation>
 
         <operation name="activateUser">

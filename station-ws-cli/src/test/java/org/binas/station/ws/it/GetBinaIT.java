@@ -37,8 +37,8 @@ public class GetBinaIT extends BaseIT {
 	// initialization and clean-up for each test
 	@Before
 	public void setUp() throws BadInit_Exception {
-		client.testClear();
-		client.testInit(X, Y, CAPACITY, RETURN_PRIZE);
+		BaseIT.client.testClear();
+		BaseIT.client.testInit(X, Y, CAPACITY, RETURN_PRIZE);
 	}
 
 	@After
@@ -51,9 +51,9 @@ public class GetBinaIT extends BaseIT {
 	/** Try to get a Bina , get one verify, one rented (less). */
 	@Test
 	public void getBinaOneTest() throws NoBinaAvail_Exception, BadInit_Exception {
-		client.getBina();
+		BaseIT.client.getBina();
 
-		StationView view = client.getInfo();
+		StationView view = BaseIT.client.getInfo();
 		assertNotNull(view);
 		assertEquals(CAPACITY - 1, view.getAvailableBinas());
 	}
@@ -61,9 +61,9 @@ public class GetBinaIT extends BaseIT {
 	@Test
 	public void getBinaAllTest() throws NoBinaAvail_Exception, BadInit_Exception {
 		for(int i = 0; i < CAPACITY; i++)
-			client.getBina();
+			BaseIT.client.getBina();
 
-		StationView view = client.getInfo();
+		StationView view = BaseIT.client.getInfo();
 		assertNotNull(view);
 		assertEquals(0, view.getAvailableBinas());
 	}
@@ -72,7 +72,7 @@ public class GetBinaIT extends BaseIT {
 	@Test(expected = NoBinaAvail_Exception.class)
 	public void getBinaNoBinaTest() throws NoBinaAvail_Exception, BadInit_Exception {
 		for(int i = 0; i <= CAPACITY; i++)
-			client.getBina();
+			BaseIT.client.getBina();
 	}
 
 	

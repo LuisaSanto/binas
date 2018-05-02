@@ -15,6 +15,10 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
 
+import javax.xml.ws.Response;
+
+import static junit.framework.TestCase.fail;
+
 
 /*
  * Base class of tests
@@ -99,6 +103,24 @@ public class BaseIT {
 			}
 		}
 	}
+
+    /**
+     * Poll 10 times if response is ready, if not, fail
+     * @param response
+     */
+    protected void pollResponse(Response response){
+        for(int i = 10; !response.isDone(); i--){
+            try{
+                Thread.sleep(100);
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+
+            if(i == 0){
+                fail();
+            }
+        }
+    }
 
 
 }

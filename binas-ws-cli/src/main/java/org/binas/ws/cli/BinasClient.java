@@ -152,7 +152,12 @@ public class BinasClient implements BinasPortType {
 		return port.getCredit(email);
 	}
 
-	@Override
+    @Override
+    public void setCredit(String email, Integer credit) throws UserNotExists_Exception{
+        port.setCredit(email, credit);
+    }
+
+    @Override
 	public String testPing(String inputMessage) {
 		return port.testPing(inputMessage);
 	}
