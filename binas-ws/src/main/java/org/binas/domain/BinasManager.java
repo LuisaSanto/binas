@@ -60,7 +60,7 @@ public class BinasManager {
 
 	// Binas Logic ----------------------------------------------------------
 
-	public User createUser(String email) throws UserAlreadyExistsException, InvalidEmailException {
+	public User createUser(String email) throws UserAlreadyExistsException, InvalidEmailException, UserNotFoundException {
 		return UsersManager.getInstance().RegisterNewUser(email);
 	}
 

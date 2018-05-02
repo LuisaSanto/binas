@@ -213,10 +213,14 @@ public class UsersManager {
 		}
 	}
 	
-	public synchronized User RegisterNewUser(String email) throws UserAlreadyExistsException, InvalidEmailException {
+	public synchronized User RegisterNewUser(String email) throws UserAlreadyExistsException, InvalidEmailException, UserNotFoundException {
 		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*@\\w+(\\.?\\w)*")) {
 			throw new InvalidEmailException();
 		}
+
+		if(UsersManager.getInstance().getUser(email) != null){
+		    throw new UserAlreadyExistsException();
+        }
 		
 		try {
             Collection<String> stations = BinasManager.getInstance().getStationsUrl();
