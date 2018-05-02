@@ -179,7 +179,7 @@ public class UsersManager {
                 //call async method
                 Response<GetBalanceResponse> response = stationClient.getBalanceAsync(email);
                 //get taggedbalance from async method
-                taggedBalances.add(response.get().getUserView());
+                taggedBalances.add(response.get().getTaggedBalance());
             } catch(StationClientException e){
                 System.out.println("Problem retrieving user " + email + " balance from stations");
             } catch (InterruptedException e) {

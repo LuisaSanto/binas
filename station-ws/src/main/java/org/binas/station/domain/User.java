@@ -14,6 +14,10 @@ public class User {
         this.mostRecentTag = tag;
     }
 
+    public User(String email){
+        this.email = email;
+    }
+
     public int getMostRecentTag(){
         return mostRecentTag;
     }

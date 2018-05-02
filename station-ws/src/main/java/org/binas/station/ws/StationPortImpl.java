@@ -88,26 +88,27 @@ public class StationPortImpl implements StationPortType {
      * @param taggedBalance data transfer object with a tag, and a value
      */
     @Override
-    public String setBalance(String userEmail, TaggedBalance taggedBalance){
-        // TODO returns
+    public void setBalance(String userEmail, TaggedBalance taggedBalance) throws UserNotExist_Exception{
         if(userEmail == null || userEmail.trim().isEmpty() || taggedBalance == null){
-            return null;
+            return ;
         }
-
-        User user;
+        User user = null;
         try{
             user =  UsersManager.getInstance().getUser(userEmail);
+            System.out.println("is user null : " + user == null);
 
             user.setBalance(taggedBalance.getValue());
             user.setMostRecentTag(taggedBalance.getTag());
 
         } catch(UserNotFoundException e){
-            user = new User(userEmail, taggedBalance.getValue(), taggedBalance.getTag());
-            UsersManager.getInstance().addUser(user);
+            throwUserNotExist("User not found at this station!");
         }
-        return null;
     }
 
+    @Override
+    public void registerUser(String userEmail){
+        UsersManager.getInstance().addUser(new User(userEmail));
+    }
 
     /** Take a bike from the station. */
 	@Override
