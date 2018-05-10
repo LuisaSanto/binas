@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.jws.HandlerChain;
 import javax.jws.WebService;
 
 import org.binas.domain.BinasManager;
@@ -29,6 +30,7 @@ import org.binas.station.ws.cli.StationClientException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
+@HandlerChain(file = "/binas-ws_handler-chain.xml")
 @WebService(
 		endpointInterface = "org.binas.ws.BinasPortType",
         wsdlLocation = "binas.wsdl",
