@@ -41,10 +41,10 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     private static final String VALID_SERVER_NAME = "binas@A58.binas.org";
 
-    static CipheredView ticketForServer;
-    static CipheredView authenticatorForServer;
-    static CipheredView mensagemCifradaEnviada;
-    static String digestMACEnviado;
+    private static CipheredView ticketForServer;
+    private static CipheredView authenticatorForServer;
+    private static CipheredView mensagemCifradaEnviada;
+    private static String digestMACEnviado;
 
 
     /**
@@ -84,7 +84,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             authenticateWithKerby();
         }
 
-        // TODO handle other stuff
+        // TODO send auth, ticket and create request and send to KerberosServerHandler by putting inside the soap message context smc
 
         return true;
     }
@@ -115,6 +115,8 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             // cipher the auth with the session key Kcs
             authenticatorForServer = authToBeCiphered.cipher(sessionKey);
 
+            // TODO contexto resposta do KerberosServerHandler
+
         } catch(KerbyClientException e){
             e.printStackTrace();
         } catch(BadTicketRequest_Exception e){
@@ -129,7 +131,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     }
 
-    /** Handles inbound messages */
+    /** Handles inbound messages received from KerberosServerHandler */
     private boolean handleInboundMessage(SOAPMessageContext smc){
 
 
