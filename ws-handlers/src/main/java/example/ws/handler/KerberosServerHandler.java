@@ -78,6 +78,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     private boolean handleInboundMessage(SOAPMessageContext smc){
         // TODO BinasAuthorizationHandler
 
+
         CipheredView ticketFromKerberosClientHandler = (CipheredView) smc.get(TICKET_PROPERTY);
         CipheredView authenticatorFromKerberosClientHandler = (CipheredView) smc.get(AUTH_PROPERTY);
 
@@ -106,9 +107,9 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             RequestTime requestTime = new RequestTime(new Date());
             requestTime.cipher(sessionKey); // cipher with session key Kc,s
 
+            // TODO efetuar operacao pedida pelo cliente no Binas
 
-
-            // TODO adicionar coisas contexto ? para depois KerberosClientHandler obter ?
+            // TODO adicionar coisas contexto
 
         } catch(KerbyException e){
             e.printStackTrace();
