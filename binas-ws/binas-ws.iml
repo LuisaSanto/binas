@@ -45,5 +45,6 @@
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
     <orderEntry type="module" module-name="station-ws-cli" />
     <orderEntry type="module" module-name="ws-handlers" />
+    <orderEntry type="module" module-name="kerby-ws-cli" />
   </component>
 </module>

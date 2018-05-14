@@ -3,10 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-
-	<groupId>org.binas.A58</groupId>
-	<artifactId>binas-ws-cli</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<groupId>pt.ulisboa.tecnico.sdis</groupId>
+	<artifactId>kerby-ws-cli</artifactId>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 
 	<name>${project.artifactId}</name>
@@ -18,16 +17,15 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<wsdl.directory>${basedir}/../binas-ws/src/main/resources</wsdl.directory>
-		<wsdl.filename>binas.wsdl</wsdl.filename>
+		<wsdl.dir>${basedir}/../kerby-contract/</wsdl.dir>
 
-		<mainclass>org.binas.ws.cli.BinasClientApp</mainclass>
+		<mainclass>pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClientApp</mainclass>
 
-		<group.id>A58</group.id>
-        <uddi.url>http://a58:5TmzqfS@uddi.sd.rnl.tecnico.ulisboa.pt:9090/</uddi.url>
-		<ws.name>${group.id}_Binas</ws.name>
-		<ws.url>http://localhost:8080/binas-ws/endpoint</ws.url>
-		<station.ws.name>${group.id}_Station</station.ws.name>
+		<uddi.url>http://localhost:9090</uddi.url>
+		<ws.name>kerby</ws.name>
+		<ws.host>localhost</ws.host>
+		<ws.port>8888</ws.port>
+		<ws.url>http://${ws.host}:${ws.port}/kerby</ws.url>
 	</properties>
 
 	<dependencies>
@@ -50,28 +48,9 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Station Client -->
-		<dependency>
-            <groupId>org.binas.A58</groupId>
-            <artifactId>station-ws-cli</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-	    </dependency>
 
-        <!-- Handlers -->
-        <dependency>
-            <groupId>org.binas.A58</groupId>
-            <artifactId>ws-handlers</artifactId>
-            <version>1.1-SNAPSHOT</version>
-        </dependency>
+    </dependencies>
 
-        <!-- kerby-lib -->
-        <dependency>
-            <groupId>pt.ulisboa.tecnico.sdis</groupId>
-            <artifactId>kerby-lib</artifactId>
-            <version>1.0</version>
-        </dependency>
-	</dependencies>
 	<build>
 		<resources>
 			<resource>
@@ -87,9 +66,19 @@
 		</testResources>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>jks</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.4.1</version>
+				<version>2.5</version>
 				<executions>
 					<execution>
 						<goals>
@@ -98,10 +87,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<wsdlDirectory>${wsdl.directory}</wsdlDirectory>
-					<wsdlFiles>
-						<wsdlFile>${wsdl.filename}</wsdlFile>
-					</wsdlFiles>
+					<!-- http://www.mojohaus.org/jaxws-maven-plugin/wsimport-mojo.html -->
+					<wsdlDirectory>${wsdl.dir}</wsdlDirectory>
 				</configuration>
 				<dependencies>
 					<dependency>
@@ -111,7 +98,6 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.19.1</version>
@@ -127,7 +113,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.5.0</version>
+				<version>1.6.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -140,15 +126,14 @@
 					<killAfter>-1</killAfter>
 					<mainClass>${mainclass}</mainClass>
 					<arguments>
-						<argument>${uddi.url}</argument>
-						<argument>${ws.name}</argument>
+						<argument>${ws.url}</argument>
 					</arguments>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>appassembler-maven-plugin</artifactId>
-				<version>1.10</version>
+				<version>2.0.0</version>
 				<executions>
 					<execution>
 						<phase>install</phase>
@@ -166,6 +151,15 @@
 					</programs>
 				</configuration>
 			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+				<configuration>
+					<!-- option to ignore javadoc errors contained in the wsimport generated code -->
+					<additionalJOption>-Xdoclint:none</additionalJOption>
+				</configuration>
+            </plugin>
 		</plugins>
 	</build>
 
