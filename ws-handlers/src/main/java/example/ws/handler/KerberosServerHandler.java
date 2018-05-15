@@ -1,12 +1,24 @@
 package example.ws.handler;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -20,7 +32,6 @@ import java.util.Set;
  */
 public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     public static final String VALID_SERVER_PASSWORD = "nhdchdps";
-    public final String TICKET_HEADER_NAME = "ticket";
 
     private CipheredView cipheredTicketView;
     private CipheredView cipheredAuthView;
@@ -65,7 +76,8 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     private boolean handleInboundMessage(SOAPMessageContext smc){
         // TODO BinasAuthorizationHandler
 
-        // TODO should this validation be on the actual Server? Binas?  send to binas and do validation there
+        retrieveTicketAndAuthFromMessageHeaders(smc);
+
         try{
             // 1. O servidor abre o ticket com a sua chave (Ks) e deve validá-lo.
             Key serverKey = SecurityHelper.generateKeyFromPassword(VALID_SERVER_PASSWORD);
@@ -108,6 +120,9 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     /** Obter o ticket e o auth a partir dos headers da mensagem soap */
     private boolean retrieveTicketAndAuthFromMessageHeaders(SOAPMessageContext smc){
         // get first header element
+        StringWriter sw = new StringWriter();
+        CipherClerk clerk = new CipherClerk();
+
         try{
             // get SOAP envelope header
             SOAPMessage msg = smc.getMessage();
@@ -121,19 +136,48 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
                 return true;
             }
 
-            Name name = se.createName(TICKET_HEADER_NAME);
+            Name ticketName = se.createName(KerberosClientHandler.TICKET_ELEMENT_NAME);
 
-            Iterator it = sh.getChildElements(name);
+            sh.getChildElements();
+            Iterator it = sh.getChildElements(ticketName);
             // check header element
             if (!it.hasNext()) {
-                System.out.printf("Header element %s not found.%n", TICKET_HEADER_NAME);
+                System.out.printf("Header element %s not found.%n", KerberosClientHandler.TICKET_ELEMENT_NAME);
                 return true;
             }
-            SOAPElement element = (SOAPElement) it.next();
+
+            // ----------------- TICKET ----------------------
+            SOAPElement ticketSOAPElement = (SOAPElement) it.next();
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
 
             // get ticket
-            cipheredTicketView = element.getValue();
+            Document ticketDocument = builder.parse(ticketSOAPElement.getValue());
+            DOMSource ticketDOMSource = new DOMSource(ticketDocument);
+            Node ticketNode = ticketDOMSource.getNode();
+
+            cipheredTicketView = clerk.cipherFromXMLNode(ticketNode);
+
+            // -----------------  AUTH  ----------------------
+            SOAPElement authSOAPElement = (SOAPElement) it.next();
+
+            Document authDocument = builder.parse(authSOAPElement.getValue());
+            DOMSource authDOMSource = new DOMSource(authDocument);
+            Node authNode = authDOMSource.getNode();
+
+            cipheredAuthView = clerk.cipherFromXMLNode(authNode);
+
+            // get auth
         } catch(SOAPException e){
+            e.printStackTrace();
+        } catch(ParserConfigurationException e){
+            e.printStackTrace();
+        } catch(SAXException e){
+            e.printStackTrace();
+        } catch(IOException e){
+            e.printStackTrace();
+        } catch(JAXBException e){
             e.printStackTrace();
         }
         return false;
