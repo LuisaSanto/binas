@@ -1,33 +1,16 @@
 package example.ws.handler;
 
 import pt.ulisboa.tecnico.sdis.kerby.*;
-import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
-import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClientException;
-
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.Name;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import static example.ws.handler.KerberosClientHandler.authenticatorForServer;
-import static example.ws.handler.KerberosClientHandler.mensagemCifradaEnviada;
-import static example.ws.handler.KerberosClientHandler.ticketForServer;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
+import java.util.Set;
 
 /**
  *  This SOAP handler intecerpts the remote calls done by binas-ws-cli for authentication,
