@@ -3,6 +3,7 @@ package example.ws.handler;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 
 import javax.xml.namespace.QName;
+import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
@@ -10,6 +11,7 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -18,9 +20,10 @@ import java.util.Set;
  */
 public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     public static final String VALID_SERVER_PASSWORD = "nhdchdps";
-    public static final String TICKET_PROPERTY = "ticketProperty";
-    public static final String AUTH_PROPERTY = "authProperty";
+    public final String TICKET_HEADER_NAME = "ticket";
 
+    private CipheredView cipheredTicketView;
+    private CipheredView cipheredAuthView;
 
     /**
      * Gets the header blocks that can be processed by this Handler instance. If
@@ -38,6 +41,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     @Override
     public boolean handleMessage(SOAPMessageContext smc) {
         Boolean outbound = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+
 
         if(outbound)
             handleOutboundMessage(smc);
@@ -61,16 +65,11 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     private boolean handleInboundMessage(SOAPMessageContext smc){
         // TODO BinasAuthorizationHandler
 
-
-        CipheredView ticketFromKerberosClientHandler = (CipheredView) smc.get(TICKET_PROPERTY);
-        CipheredView authenticatorFromKerberosClientHandler = (CipheredView) smc.get(AUTH_PROPERTY);
-
-
         // TODO should this validation be on the actual Server? Binas?  send to binas and do validation there
         try{
             // 1. O servidor abre o ticket com a sua chave (Ks) e deve validá-lo.
             Key serverKey = SecurityHelper.generateKeyFromPassword(VALID_SERVER_PASSWORD);
-            Ticket ticket = new Ticket(ticketFromKerberosClientHandler, serverKey);
+            Ticket ticket = new Ticket(cipheredTicketView, serverKey);
 
             ticket.validate();
             Key sessionKey = ticket.getKeyXY();
@@ -79,7 +78,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             // so: Authcs = {c, Treq}Kcs  - ciphered with the session key between client and server
 
             // 2. Depois deve abrir o autenticador com a chave de sessão (Kcs) e validá-lo.
-            Auth auth = new Auth(authenticatorFromKerberosClientHandler, sessionKey);
+            Auth auth = new Auth(cipheredAuthView, sessionKey);
 
             // 3 TODO verificar integridade atraves MACHandler
 
@@ -104,6 +103,40 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
 
         return true;
+    }
+
+    /** Obter o ticket e o auth a partir dos headers da mensagem soap */
+    private boolean retrieveTicketAndAuthFromMessageHeaders(SOAPMessageContext smc){
+        // get first header element
+        try{
+            // get SOAP envelope header
+            SOAPMessage msg = smc.getMessage();
+            SOAPPart sp = msg.getSOAPPart();
+            SOAPEnvelope se = sp.getEnvelope();
+            SOAPHeader sh = se.getHeader();
+
+            // check header
+            if (sh == null) {
+                System.out.println("Header not found.");
+                return true;
+            }
+
+            Name name = se.createName(TICKET_HEADER_NAME);
+
+            Iterator it = sh.getChildElements(name);
+            // check header element
+            if (!it.hasNext()) {
+                System.out.printf("Header element %s not found.%n", TICKET_HEADER_NAME);
+                return true;
+            }
+            SOAPElement element = (SOAPElement) it.next();
+
+            // get ticket
+            cipheredTicketView = element.getValue();
+        } catch(SOAPException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
 

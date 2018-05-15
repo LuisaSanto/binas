@@ -1,9 +1,11 @@
 package example.ws.handler;
 
+import org.w3c.dom.Node;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClientException;
 
+import java.io.StringWriter;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -11,8 +13,15 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.Set;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
@@ -27,6 +36,9 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     private static final String VALID_CLIENT_PASSWORD = "r6p67xdOV";
     private static SecureRandom randomGenerator = new SecureRandom();
     private static final int VALID_DURATION = 30;
+
+    public final String TICKET_HEADER_NAME = "ticket";
+    public final String AUTH_HEADER_NAME = "auth";
 
     private static final String VALID_SERVER_NAME = "binas@A58.binas.org";
 
@@ -77,6 +89,9 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     private void addTicketAndAuthToMessage(SOAPMessageContext smc){
+        CipherClerk clerk = new CipherClerk();
+
+
         try{
             // get soap envelope
             SOAPMessage msg = smc.getMessage();
@@ -89,18 +104,39 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
                 sh = se.addHeader();
             }
 
-            Name ticketName = se.createName("ticket" );
-            SOAPHeaderElement element = sh.addHeaderElement(ticketName);
+            // ----------------- TICKET ----------------------
+            // criar node XML
+            Node ticketNode = clerk.cipherToXMLNode(ticket, TICKET_HEADER_NAME);
 
-            CipherClerk clerk = new CipherClerk();
+            Name ticketName = se.createName(TICKET_HEADER_NAME, "ns1" ,"urn:ticket");
+            SOAPElement element = sh.addChildElement(ticketName);
 
-            // add ticket
-            element.addTextNode(clerk.cipherToString(ticket));
+            // serializar o ticketNode
+            StringWriter sw = new StringWriter();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(new DOMSource(ticketNode), new StreamResult(sw));
+            element.addTextNode(sw.toString());
 
-            // add auth
-            element.addTextNode(clerk.cipherToString(auth));
+            // -----------------  AUTH  ----------------------
+
+            // criar node XML
+            Node authNode = clerk.cipherToXMLNode(auth, AUTH_HEADER_NAME);
+
+            Name authName = se.createName(TICKET_HEADER_NAME, "ns1" ,"urn:auth");
+
+            // serializar o authNode
+            sw = new StringWriter();
+            transformer.transform(new DOMSource(ticketNode), new StreamResult(sw));
+            element.addTextNode(sw.toString());
+
 
         } catch(SOAPException e){
+            e.printStackTrace();
+        } catch(JAXBException e){
+            e.printStackTrace();
+        } catch(TransformerConfigurationException e){
+            e.printStackTrace();
+        } catch(TransformerException e){
             e.printStackTrace();
         }
     }
