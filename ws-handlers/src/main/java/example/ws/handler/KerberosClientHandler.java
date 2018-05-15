@@ -122,7 +122,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             // criar node XML
             Node authNode = clerk.cipherToXMLNode(auth, AUTH_HEADER_NAME);
 
-            Name authName = se.createName(TICKET_HEADER_NAME, "ns1" ,"urn:auth");
+            Name authName = se.createName(AUTH_HEADER_NAME, "ns1" ,"urn:auth");
 
             // serializar o authNode
             sw = new StringWriter();
