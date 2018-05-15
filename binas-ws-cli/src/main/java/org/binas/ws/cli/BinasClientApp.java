@@ -2,11 +2,6 @@ package org.binas.ws.cli;
 
 import java.util.List;
 
-import org.binas.ws.BadInit_Exception;
-import org.binas.ws.CoordinatesView;
-import org.binas.ws.InvalidStation_Exception;
-import org.binas.ws.StationView;
-import org.binas.ws.UserNotExists_Exception;
 
 /**
  * Class that contains the main of the BinasClient

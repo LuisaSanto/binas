@@ -16,8 +16,6 @@
         <module>binas-ws</module>
         <module>binas-ws-cli</module>
         <module>ws-handlers</module>
-        <module>kerby-lib</module>
-        <module>kerby-ws-cli</module>
     </modules>
 
 </project>

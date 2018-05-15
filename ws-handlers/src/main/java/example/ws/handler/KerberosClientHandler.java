@@ -9,19 +9,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.Name;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
+import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
@@ -30,9 +22,6 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
  *  and creates a KerbyClient to authenticate with the kerby server in RNL
  */
 public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
-    public static final String REQUIRE_AUTHENTICATION_PROPERTY = "requireAuthenticationProperty";
-    public static final String ENDPOINT_ADDRESS_PROPERTY = "endpointAddressProperty";
-
     public static final String KERBY_WS_URL = "http://sec.sd.rnl.tecnico.ulisboa.pt:8888/kerby";
     private static final String VALID_CLIENT_NAME = "alice@A58.binas.org";
     private static final String VALID_CLIENT_PASSWORD = "r6p67xdOV";
@@ -41,10 +30,8 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     private static final String VALID_SERVER_NAME = "binas@A58.binas.org";
 
-    private static CipheredView ticketForServer;
-    private static CipheredView authenticatorForServer;
-    private static CipheredView mensagemCifradaEnviada;
-    private static String digestMACEnviado;
+    private static CipheredView ticket;
+    private static CipheredView auth;
 
 
     /**
@@ -64,12 +51,17 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     public boolean handleMessage(SOAPMessageContext smc) {
         Boolean outbound = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
-        if(outbound)
-            handleOutboundMessage(smc);
-        else
-            handleInboundMessage(smc);
+        if(outbound){
 
-        return true;
+            // garantir que esta autenticado ao kerby e o limite de validade do ticket nao foi ultrapassado
+            if(!isAuthenticatedToKerby()){
+                authenticateWithKerby();
+            }
+            return handleOutboundMessage(smc);
+        }else{
+            return handleInboundMessage(smc);
+        }
+
     }
 
 
@@ -78,15 +70,39 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     /** Handles outbound messages */
     private boolean handleOutboundMessage(SOAPMessageContext smc){
-        boolean requireAuthentication = (boolean) smc.get(REQUIRE_AUTHENTICATION_PROPERTY);
+        addTicketAndAuthToMessage(smc);
 
-        if(requireAuthentication){
-            authenticateWithKerby();
-        }
-
-        // TODO send auth, ticket and create request and send to KerberosServerHandler by putting inside the soap message context smc
 
         return true;
+    }
+
+    private void addTicketAndAuthToMessage(SOAPMessageContext smc){
+        try{
+            // get soap envelope
+            SOAPMessage msg = smc.getMessage();
+            SOAPPart sp = msg.getSOAPPart();
+            SOAPEnvelope se = sp.getEnvelope();
+
+            // add header if there is none ( se.getHeader() is null if the header doesn't exist )
+            SOAPHeader sh = se.getHeader();
+            if(sh == null){
+                sh = se.addHeader();
+            }
+
+            Name ticketName = se.createName("ticket" );
+            SOAPHeaderElement element = sh.addHeaderElement(ticketName);
+
+            CipherClerk clerk = new CipherClerk();
+
+            // add ticket
+            element.addTextNode(clerk.cipherToString(ticket));
+
+            // add auth
+            element.addTextNode(clerk.cipherToString(auth));
+
+        } catch(SOAPException e){
+            e.printStackTrace();
+        }
     }
 
     /** Authenticate with Kerby */
@@ -108,12 +124,12 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             Key sessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), aliceKey).getKeyXY();
 
             // 3. save ticket for server
-            ticketForServer = sessionKeyAndTicketView.getTicket();
+            ticket = sessionKeyAndTicketView.getTicket();
 
             // 4. create authenticator (Auth)
             Auth authToBeCiphered = new Auth(VALID_CLIENT_NAME, new Date());
             // cipher the auth with the session key Kcs
-            authenticatorForServer = authToBeCiphered.cipher(sessionKey);
+            auth = authToBeCiphered.cipher(sessionKey);
 
             // TODO contexto resposta do KerberosServerHandler
 
@@ -153,6 +169,12 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     @Override
     public void close(MessageContext messageContext) {
         // nothing to clean up
+    }
+
+    /** verifica se cliente está autenticado */
+    private boolean isAuthenticatedToKerby(){
+        // TODO verificar limite validade ticket tbm
+        return ticket != null;
     }
 
 }
