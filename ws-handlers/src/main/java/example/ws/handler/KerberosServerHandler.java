@@ -168,7 +168,6 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
             cipheredAuthView = clerk.cipherFromXMLNode(authNode);
 
-            // get auth
         } catch(SOAPException e){
             e.printStackTrace();
         } catch(ParserConfigurationException e){
