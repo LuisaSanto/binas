@@ -37,8 +37,9 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     private static SecureRandom randomGenerator = new SecureRandom();
     private static final int VALID_DURATION = 30;
 
-    public final String TICKET_HEADER_NAME = "ticket";
-    public final String AUTH_HEADER_NAME = "auth";
+    public static final String TICKET_ELEMENT_NAME = "ticket";
+    public static final String AUTH_ELEMENT_NAME = "auth";
+
 
     private static final String VALID_SERVER_NAME = "binas@A58.binas.org";
 
@@ -106,9 +107,9 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
             // ----------------- TICKET ----------------------
             // criar node XML
-            Node ticketNode = clerk.cipherToXMLNode(ticket, TICKET_HEADER_NAME);
+            Node ticketNode = clerk.cipherToXMLNode(ticket, TICKET_ELEMENT_NAME);
 
-            Name ticketName = se.createName(TICKET_HEADER_NAME, "ns1" ,"urn:ticket");
+            Name ticketName = se.createName(TICKET_ELEMENT_NAME, "ns1" ,"urn:ticket");
             SOAPElement element = sh.addChildElement(ticketName);
 
             // serializar o ticketNode
@@ -120,9 +121,10 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             // -----------------  AUTH  ----------------------
 
             // criar node XML
-            Node authNode = clerk.cipherToXMLNode(auth, AUTH_HEADER_NAME);
+            Node authNode = clerk.cipherToXMLNode(auth, AUTH_ELEMENT_NAME);
 
-            Name authName = se.createName(AUTH_HEADER_NAME, "ns1" ,"urn:auth");
+            Name authName = se.createName(AUTH_ELEMENT_NAME, "ns1" ,"urn:auth");
+            element = sh.addChildElement(authName);
 
             // serializar o authNode
             sw = new StringWriter();
