@@ -36,10 +36,6 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
  */
 public class BinasClient implements BinasPortType {
 
-    private static CipheredView ticket = null;
-    private static CipheredView auth;
-
-
     /** WS service */
     BinasService service = null;
 
@@ -87,20 +83,6 @@ public class BinasClient implements BinasPortType {
         this.wsName = wsName;
         uddiLookup();
         createStub();
-
-    }
-
-    /** verifica se cliente está autenticado */
-    private boolean isAuthenticatedToKerby(){
-        return ticket != null;
-    }
-
-    /** if not authenticated, add property to message context to require authentication with kerby */
-    private void guaranteeAuthenticationToKerby(){
-        if(!isAuthenticatedToKerby()){
-            requestContext.put(KerberosClientHandler.REQUIRE_AUTHENTICATION_PROPERTY, true);
-            requestContext.put(KerberosClientHandler.ENDPOINT_ADDRESS_PROPERTY, wsURL);
-        }
     }
 
 
@@ -150,70 +132,60 @@ public class BinasClient implements BinasPortType {
 
 	@Override
 	public UserView activateUser(String email) throws EmailExists_Exception, InvalidEmail_Exception {
-        guaranteeAuthenticationToKerby();
 		return port.activateUser(email);
 	}
 
 	@Override
 	public StationView getInfoStation(String stationId) throws InvalidStation_Exception {
-        guaranteeAuthenticationToKerby();
         return port.getInfoStation(stationId);
 	}
 
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
-        guaranteeAuthenticationToKerby();
         return port.listStations(numberOfStations,coordinates);
 	}
 
 	@Override
 	public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception,
 			NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
-        guaranteeAuthenticationToKerby();
         port.rentBina(stationId,email);
 	}
 
 	@Override
 	public void returnBina(String stationId, String email)
 			throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
-        guaranteeAuthenticationToKerby();
         port.returnBina(stationId,email);
 	}
 
 	@Override
 	public int getCredit(String email) throws UserNotExists_Exception {
-        guaranteeAuthenticationToKerby();
         return port.getCredit(email);
 	}
 
     @Override
     public void setCredit(String email, Integer credit) throws UserNotExists_Exception{
-        guaranteeAuthenticationToKerby();
         port.setCredit(email, credit);
     }
 
     @Override
 	public String testPing(String inputMessage) {
-        guaranteeAuthenticationToKerby();
         return port.testPing(inputMessage);
 	}
 
 	@Override
 	public void testClear() {
-        guaranteeAuthenticationToKerby();
         port.testClear();
 	}
 
 	@Override
 	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize)
 			throws BadInit_Exception {
-        guaranteeAuthenticationToKerby();
         port.testInitStation(stationId, x, y, capacity, returnPrize);
 	}
 
 	@Override
 	public void testInit(int userInitialPoints) throws BadInit_Exception {
-        guaranteeAuthenticationToKerby();
         port.testInit(userInitialPoints);
 	}
-}   
+
+}
