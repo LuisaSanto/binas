@@ -1,28 +1,17 @@
 package org.binas.domain;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Vector;
-import java.util.regex.Pattern;
-
-import org.binas.domain.exception.BadInitException;
-import org.binas.domain.exception.InsufficientCreditsException;
-import org.binas.domain.exception.InvalidEmailException;
-import org.binas.domain.exception.StationNotFoundException;
-import org.binas.domain.exception.UserAlreadyExistsException;
-import org.binas.domain.exception.UserAlreadyHasBinaException;
-import org.binas.domain.exception.UserHasNoBinaException;
-import org.binas.domain.exception.UserNotFoundException;
+import org.binas.domain.exception.*;
 import org.binas.station.ws.BadInit_Exception;
 import org.binas.station.ws.NoBinaAvail_Exception;
 import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
-import org.binas.ws.StationView;
-
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * BinasManager class 
@@ -60,11 +49,11 @@ public class BinasManager {
 
 	// Binas Logic ----------------------------------------------------------
 
-	public User createUser(String email) throws UserAlreadyExistsException, InvalidEmailException, UserNotFoundException {
+	public User createUser(String email) throws UserAlreadyExistsException, InvalidEmailException{
 		return UsersManager.getInstance().RegisterNewUser(email);
 	}
 
-	public User getUser(String email) throws UserNotFoundException {
+	public User getUser(String email) throws UserNotFoundException{
 		return UsersManager.getInstance().getUser(email);
 	}
 	
@@ -83,7 +72,7 @@ public class BinasManager {
 		}
 	}
 	
-	public void returnBina(String stationId, String email) throws UserNotFoundException, NoSlotAvail_Exception, UserHasNoBinaException, StationNotFoundException {
+	public void returnBina(String stationId, String email) throws UserNotFoundException, NoSlotAvail_Exception, UserHasNoBinaException, StationNotFoundException{
 		User user = getUser(email);
 		synchronized (user) {
 			//validate user can rent
@@ -98,7 +87,7 @@ public class BinasManager {
 		}		
 	}
 
-	public StationClient getStation(String stationId) throws StationNotFoundException {
+	public StationClient getStation(String stationId) throws StationNotFoundException{
 
 		Collection<String> stations = this.getStations();
 		String uddiUrl = BinasManager.getInstance().getUddiURL();
@@ -118,9 +107,8 @@ public class BinasManager {
 		
 		throw new StationNotFoundException();
 	}
-
-
-
+	
+	
 	// UDDI ------------------------------------------------------------------
 
 	public void initUddiURL(String uddiURL) {
@@ -165,24 +153,11 @@ public class BinasManager {
 		return stations;
 	}
 
-    public Collection<String> getStationsUrl() {
-        Collection<UDDIRecord> records = null;
-        Collection<String> stations = new ArrayList<String>();
-        try {
-            UDDINaming uddi = new UDDINaming(uddiURL);
-            records = uddi.listRecords(stationTemplateName + "%");
-            for (UDDIRecord u : records)
-                stations.add(u.getUrl());
-        } catch (UDDINamingException e) {
-        }
-        return stations;
-    }
-
 	public void reset() {
 		UsersManager.getInstance().reset();
 	}
 
-	public void init(int userInitialPoints) throws BadInitException {
+	public void init(int userInitialPoints) throws BadInitException{
 		if(userInitialPoints < 0) {
 			throw new BadInitException();
 		}
@@ -201,7 +176,7 @@ public class BinasManager {
 	 * @throws BadInitException
 	 * @throws StationNotFoundException
 	 */
-	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInitException, StationNotFoundException {
+	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInitException, StationNotFoundException{
 		//validate station can rent
 		StationClient stationCli;
 		try {

@@ -1,35 +1,21 @@
 package org.binas.ws;
 
-import java.io.IOException;
-import java.net.ConnectException;
+import org.binas.domain.BinasManager;
+import org.binas.domain.StationsComparator;
+import org.binas.domain.User;
+import org.binas.domain.exception.*;
+import org.binas.station.ws.NoSlotAvail_Exception;
+import org.binas.station.ws.cli.StationClient;
+import org.binas.station.ws.cli.StationClientException;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
+
+import javax.jws.HandlerChain;
+import javax.jws.WebService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import javax.jws.HandlerChain;
-import javax.jws.WebService;
-
-import org.binas.domain.BinasManager;
-import org.binas.domain.StationsComparator;
-import org.binas.domain.User;
-import org.binas.domain.UsersManager;
-import org.binas.domain.exception.BadInitException;
-import org.binas.domain.exception.InsufficientCreditsException;
-import org.binas.domain.exception.InvalidEmailException;
-import org.binas.domain.exception.StationNotFoundException;
-import org.binas.domain.exception.UserAlreadyExistsException;
-import org.binas.domain.exception.UserAlreadyHasBinaException;
-import org.binas.domain.exception.UserHasNoBinaException;
-import org.binas.domain.exception.UserNotFoundException;
-import org.binas.station.ws.NoSlotAvail_Exception;
-import org.binas.station.ws.cli.StationClient;
-
-import org.binas.station.ws.cli.StationClientException;
-
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
-
 @HandlerChain(file = "/binas-ws_handler-chain.xml")
 @WebService(
 		endpointInterface = "org.binas.ws.BinasPortType",
@@ -40,8 +26,6 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
         serviceName = "BinasService"
 )
 public class BinasPortImpl implements BinasPortType {
-
-    public BinasPortImpl(){}
 	
 	// end point manager
 	private BinasEndpointManager endpointManager;
@@ -51,9 +35,9 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	@Override
-	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception{
+	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception {
 		try {
-			User user = UsersManager.getInstance().RegisterNewUser(email);
+			User user = BinasManager.getInstance().createUser(email);
 			
 			//Create and populate userView
 			UserView userView = new UserView();
@@ -66,7 +50,7 @@ public class BinasPortImpl implements BinasPortType {
 		} catch (InvalidEmailException e) {
 			throwInvalidEmail("Invalid email: " + email);
 		}
-        return null;
+		return null;
 	}
 
 	@Override
@@ -92,10 +76,10 @@ public class BinasPortImpl implements BinasPortType {
 		String uddiUrl = BinasManager.getInstance().getUddiURL();
 		StationClient sc = null;
 		org.binas.station.ws.StationView sv = null;
-
+		
 		if(numberOfStations <= 0 || coordinates == null)
 			return stationViews;
-
+		
 		for (String s : stations) {
 			try {
 				sc = new StationClient(uddiUrl, s);
@@ -106,7 +90,7 @@ public class BinasPortImpl implements BinasPortType {
 			}
 		}
 		Collections.sort(stationViews, new StationsComparator(coordinates));
-
+		
 		if(numberOfStations > stationViews.size())
 			return stationViews;
 		else
@@ -116,7 +100,7 @@ public class BinasPortImpl implements BinasPortType {
 	@Override
 	public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception,
 			NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
-
+		
 		try {
 			BinasManager.getInstance().rentBina(stationId,email);
 		} catch (UserNotFoundException e) {
@@ -151,29 +135,19 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public int getCredit(String email) throws UserNotExists_Exception {
-        User user = null;
-        try{
-            user = BinasManager.getInstance().getUser(email);
-            return user.getCredit();
-        } catch(UserNotFoundException e){
-            throwUserNotExists("User not exist in station");
-        }
-        return -1;
+		try {
+			User user = BinasManager.getInstance().getUser(email);
+			return user.getCredit();
+		} catch (UserNotFoundException e) {
+			throwUserNotExists("User not found: " + email);
+		}
+		return 0;
 	}
 
     @Override
     public void setCredit(String email, Integer credit) throws UserNotExists_Exception{
-        User user = null;
-        try{
-            user = BinasManager.getInstance().getUser(email);
-        } catch(UserNotFoundException e){
-            e.printStackTrace();
-        }
-        user.setCredit(credit);
-
-
+        // placeholder
     }
-
 
     // Auxiliary operations --------------------------------------------------
 	

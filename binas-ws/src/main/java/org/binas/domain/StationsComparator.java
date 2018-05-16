@@ -1,9 +1,9 @@
 package org.binas.domain;
 
-import java.util.Comparator;
-
 import org.binas.ws.CoordinatesView;
 import org.binas.ws.StationView;
+
+import java.util.Comparator;
 
 /**
  * This class compares the coordinates of Two different stations by implementing the euclidean distance 

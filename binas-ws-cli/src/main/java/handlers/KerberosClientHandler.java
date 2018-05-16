@@ -71,14 +71,15 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
         if(outbound){
             // garantir que esta autenticado ao kerby e o limite de validade do ticket nao foi ultrapassado
             if(!isTicketValid()){
-                System.out.println("requesting new ticket and session key");
+                System.out.println("Requesting new ticket and session key from Kerbi");
                 requestNewTicketAndSessionKey();
             }
 
             initCipheredTicketAndAuth();
+
             return handleOutboundMessage(smc);
         }else{
-            // TODO adicionar o novo ticket ao TicketCollection do binasclient aqui
+            // TODO contexto resposta do KerberosServerHandler  get {Treq }kcs , response from the soap message
 
             return handleInboundMessage(smc);
         }
@@ -143,7 +144,6 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
             System.out.println("requested new ticket and session key");
 
-            // TODO contexto resposta do KerberosServerHandler
 
         } catch(KerbyClientException e){
             e.printStackTrace();
@@ -210,6 +210,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             transformer.transform(new DOMSource(authNode), new StreamResult(sw));
             element2.addTextNode(sw.toString());
 
+
         } catch(SOAPException e){
             e.printStackTrace();
         } catch(JAXBException e){
@@ -227,8 +228,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     /** Handles inbound messages received from KerberosServerHandler */
     private boolean handleInboundMessage(SOAPMessageContext smc){
-
-
+        System.out.println("handling inbound message");
         return true;
     }
 
@@ -236,7 +236,12 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     /** The handleFault method is invoked for fault message processing. */
     @Override
     public boolean handleFault(SOAPMessageContext smc) {
-        System.out.println("Ignoring fault message...");
+        System.out.println("Soap Fault Handled:");
+        try{
+            System.out.println(smc.getMessage().getSOAPBody().getFault().getFaultString());
+        } catch(SOAPException e){
+            e.printStackTrace();
+        }
         return true;
     }
 
