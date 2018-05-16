@@ -47,5 +47,6 @@
     <orderEntry type="module" module-name="ws-handlers" />
     <orderEntry type="library" name="Maven: pt.ulisboa.tecnico.sdis:kerby-ws-cli:1.0" level="project" />
     <orderEntry type="library" name="Maven: pt.ulisboa.tecnico.sdis:kerby-lib:1.0" level="project" />
+    <orderEntry type="module" module-name="binas-ws-cli" />
   </component>
 </module>

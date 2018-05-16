@@ -1,8 +1,7 @@
 package example.ws.handler;
 
-import org.w3c.dom.Document;
+import org.binas.ws.cli.BinasClient;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClientException;
@@ -47,6 +46,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     private static CipheredView ticket;
     private static CipheredView auth;
+    private static Key kcsSessionKey;
 
 
     /**
@@ -66,20 +66,87 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     public boolean handleMessage(SOAPMessageContext smc) {
         Boolean outbound = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
-        if(outbound){
 
+        if(outbound){
             // garantir que esta autenticado ao kerby e o limite de validade do ticket nao foi ultrapassado
-            if(!isAuthenticatedToKerby()){
-                authenticateWithKerby();
+            if(!isTicketValid()){
+                requestNewTicketAndSessionKey();
             }
+
+            initCipheredTicketAndAuth();
             return handleOutboundMessage(smc);
         }else{
+            // TODO adicionar o novo ticket ao TicketCollection do binasclient aqui
+
             return handleInboundMessage(smc);
         }
 
     }
 
+    /**
+     * retira um SessionKeyAndTicketView do binasClient ticket collection
+     * e obtem o CipheredView correspondente ao ticket, a key de sessao
+     * e cria um novo auth
+     */
+    private void initCipheredTicketAndAuth(){
+        SessionKeyAndTicketView sessionKeyAndTicketView = BinasClient.ticketCollection.getTicket(BinasClient.VALID_SERVER_NAME);
+        ticket = sessionKeyAndTicketView.getTicket();
 
+        try{
+            Key clientKey = SecurityHelper.generateKeyFromPassword(BinasClient.VALID_CLIENT_PASSWORD);
+            kcsSessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), clientKey).getKeyXY();
+            auth = new Auth(BinasClient.VALID_CLIENT_NAME, new Date()).cipher(kcsSessionKey);
+
+        } catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+        } catch(InvalidKeySpecException e){
+            e.printStackTrace();
+        } catch(KerbyException e){
+            e.printStackTrace();
+        }
+    }
+
+    /** Request new ticket and session key from Kerby */
+    private void requestNewTicketAndSessionKey(){
+        try{
+            KerbyClient kerbyClient = new KerbyClient(KERBY_WS_URL);
+
+            // nounce to prevent replay attacks
+            long nounce = randomGenerator.nextLong();
+
+            // 1. authenticate user and get ticket and session key by requesting a ticket to kerby
+            SessionKeyAndTicketView sessionKeyAndTicketView = kerbyClient.requestTicket(VALID_CLIENT_NAME, VALID_SERVER_NAME, nounce, VALID_DURATION);
+
+            // 2. generate a key from alice's password, to decipher and retrieve the session key with the Kc (client key)
+            Key aliceKey = SecurityHelper.generateKeyFromPassword(BinasClient.VALID_CLIENT_PASSWORD);
+
+            // NOTE: SessionKey : {Kc.s , n}Kc
+            // to get the actual session key, we call getKeyXY
+            kcsSessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), aliceKey).getKeyXY();
+
+            // 3. save ticket for server
+            ticket = sessionKeyAndTicketView.getTicket();
+
+            // 4. create authenticator (Auth)
+            Auth authToBeCiphered = new Auth(VALID_CLIENT_NAME, new Date());
+            // cipher the auth with the session key Kcs
+            auth = authToBeCiphered.cipher(kcsSessionKey);
+
+            // TODO contexto resposta do KerberosServerHandler
+
+        } catch(KerbyClientException e){
+            e.printStackTrace();
+        } catch(BadTicketRequest_Exception e){
+            e.printStackTrace();
+        } catch(KerbyException e){
+            e.printStackTrace();
+        } catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+        } catch(InvalidKeySpecException e){
+            e.printStackTrace();
+        }
+
+    }
     // TODO MAC HANDLER ??? separate class file, gets called in the chain after authentication!! not here
 
 
@@ -92,8 +159,6 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     private void addTicketAndAuthToMessage(SOAPMessageContext smc){
         CipherClerk clerk = new CipherClerk();
-
-
         try{
             // get soap envelope
             SOAPMessage msg = smc.getMessage();
@@ -106,12 +171,9 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
                 sh = se.addHeader();
             }
 
-
-
             // ----------------- TICKET ----------------------
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-
             StringWriter sw = new StringWriter();
 
             // criar node XML
@@ -120,7 +182,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             Name ticketName = se.createName(TICKET_ELEMENT_NAME, "ns1" ,"urn:ticket");
             SOAPHeaderElement element = sh.addHeaderElement(ticketName);
 
-            // serializar o ticketNode
+            // serializar e o ticketNode á mensagem SOAP
             transformer.transform(new DOMSource(ticketNode), new StreamResult(sw));
             element.addTextNode(sw.toString());
 
@@ -150,47 +212,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
         }
     }
 
-    /** Authenticate with Kerby */
-    private void authenticateWithKerby(){
-        try{
-            KerbyClient kerbyClient = new KerbyClient(KERBY_WS_URL);
 
-            // nounce to prevent replay attacks
-            long nounce = randomGenerator.nextLong();
-
-            // 1. authenticate user and get ticket and session key by requesting a ticket to kerby
-            SessionKeyAndTicketView sessionKeyAndTicketView = kerbyClient.requestTicket(VALID_CLIENT_NAME, VALID_SERVER_NAME, nounce, VALID_DURATION);
-
-            // 2. generate a key from alice's password, to decipher and retrieve the session key with the Kc (client key)
-            Key aliceKey = SecurityHelper.generateKeyFromPassword(VALID_CLIENT_PASSWORD);
-
-            // NOTE: SessionKey : {Kc.s , n}Kc
-            // to get the actual session key, we call getKeyXY
-            Key sessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), aliceKey).getKeyXY();
-
-            // 3. save ticket for server
-            ticket = sessionKeyAndTicketView.getTicket();
-
-            // 4. create authenticator (Auth)
-            Auth authToBeCiphered = new Auth(VALID_CLIENT_NAME, new Date());
-            // cipher the auth with the session key Kcs
-            auth = authToBeCiphered.cipher(sessionKey);
-
-            // TODO contexto resposta do KerberosServerHandler
-
-        } catch(KerbyClientException e){
-            e.printStackTrace();
-        } catch(BadTicketRequest_Exception e){
-            e.printStackTrace();
-        } catch(KerbyException e){
-            e.printStackTrace();
-        } catch(NoSuchAlgorithmException e){
-            e.printStackTrace();
-        } catch(InvalidKeySpecException e){
-            e.printStackTrace();
-        }
-
-    }
 
     /** Handles inbound messages received from KerberosServerHandler */
     private boolean handleInboundMessage(SOAPMessageContext smc){
@@ -216,31 +238,12 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
         // nothing to clean up
     }
 
-    /** verifica se cliente está autenticado */
-    private boolean isAuthenticatedToKerby(){
-        // TODO verificar limite validade ticket tbm
-        return ticket != null;
+    /** verifica se cliente está autenticado verificando se existe um ticket valido */
+    private boolean isTicketValid(){
+        return BinasClient.ticketCollection.getTicket(BinasClient.VALID_SERVER_NAME) != null;
     }
 
     /** SOAP to DOM and DOM to SOAP methods */
 
-    private static Document SOAPMessageToDOMDocument(SOAPMessage msg) throws Exception {
-
-        // SOAPPart implements org.w3c.dom.Document interface
-        Document part = msg.getSOAPPart();
-
-        return part;
-    }
-
-    private static SOAPMessage DOMDocumentToSOAPMessage(Document doc) throws Exception {
-        SOAPMessage newMsg = null;
-
-        MessageFactory mf = MessageFactory.newInstance();
-        newMsg = mf.createMessage();
-        SOAPPart soapPart = newMsg.getSOAPPart();
-        soapPart.setContent(new DOMSource(doc));
-
-        return newMsg;
-    }
 
 }
