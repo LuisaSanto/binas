@@ -1,6 +1,8 @@
 package example.ws.handler;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClientException;
@@ -85,7 +87,6 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     private boolean handleOutboundMessage(SOAPMessageContext smc){
         addTicketAndAuthToMessage(smc);
 
-
         return true;
     }
 
@@ -105,16 +106,34 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
                 sh = se.addHeader();
             }
 
+
+
+
+            // ----------------- DEBUG ---------------
+            /*
+            String ticketData = new String(ticket.getData());
+            Name ticketName = se.createName(TICKET_ELEMENT_NAME, "ns1" ,"urn:ticket");
+            SOAPElement element = sh.addChildElement(ticketName);
+            element.addTextNode(ticketData);
+
+
+            transformer.transform(new DOMSource(sh), new StreamResult(sw));
+            System.out.println("Just the header transformed :" + sw.toString());
+            */
+
             // ----------------- TICKET ----------------------
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+
+            StringWriter sw = new StringWriter();
+
             // criar node XML
             Node ticketNode = clerk.cipherToXMLNode(ticket, TICKET_ELEMENT_NAME);
 
             Name ticketName = se.createName(TICKET_ELEMENT_NAME, "ns1" ,"urn:ticket");
-            SOAPElement element = sh.addChildElement(ticketName);
+            SOAPHeaderElement element = sh.addHeaderElement(ticketName);
 
             // serializar o ticketNode
-            StringWriter sw = new StringWriter();
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(new DOMSource(ticketNode), new StreamResult(sw));
             element.addTextNode(sw.toString());
 
@@ -124,13 +143,12 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             Node authNode = clerk.cipherToXMLNode(auth, AUTH_ELEMENT_NAME);
 
             Name authName = se.createName(AUTH_ELEMENT_NAME, "ns1" ,"urn:auth");
-            element = sh.addChildElement(authName);
+            SOAPHeaderElement element2 = sh.addHeaderElement(authName);
 
             // serializar o authNode
             sw = new StringWriter();
-            transformer.transform(new DOMSource(ticketNode), new StreamResult(sw));
-            element.addTextNode(sw.toString());
-
+            transformer.transform(new DOMSource(authNode), new StreamResult(sw));
+            element2.addTextNode(sw.toString());
 
         } catch(SOAPException e){
             e.printStackTrace();
@@ -139,6 +157,8 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
         } catch(TransformerConfigurationException e){
             e.printStackTrace();
         } catch(TransformerException e){
+            e.printStackTrace();
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
@@ -213,6 +233,27 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     private boolean isAuthenticatedToKerby(){
         // TODO verificar limite validade ticket tbm
         return ticket != null;
+    }
+
+    /** SOAP to DOM and DOM to SOAP methods */
+
+    private static Document SOAPMessageToDOMDocument(SOAPMessage msg) throws Exception {
+
+        // SOAPPart implements org.w3c.dom.Document interface
+        Document part = msg.getSOAPPart();
+
+        return part;
+    }
+
+    private static SOAPMessage DOMDocumentToSOAPMessage(Document doc) throws Exception {
+        SOAPMessage newMsg = null;
+
+        MessageFactory mf = MessageFactory.newInstance();
+        newMsg = mf.createMessage();
+        SOAPPart soapPart = newMsg.getSOAPPart();
+        soapPart.setContent(new DOMSource(doc));
+
+        return newMsg;
     }
 
 }
