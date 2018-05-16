@@ -86,6 +86,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             Ticket ticket = new Ticket(cipheredTicketView, serverKey);
 
             ticket.validate();
+            System.out.println("ticket validated");
             Key sessionKey = ticket.getKeyXY();
 
             // Authxy = {x, Treq}Kxy
@@ -93,6 +94,8 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
             // 2. Depois deve abrir o autenticador com a chave de sessão (Kcs) e validá-lo.
             Auth auth = new Auth(cipheredAuthView, sessionKey);
+            auth.validate();
+            System.out.println("auth validated");
 
             // 3 TODO verificar integridade atraves MACHandler onde!?
 
@@ -201,25 +204,4 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
         // nothing to clean up
     }
 
-
-    /** SOAP to DOM and DOM to SOAP methods */
-
-    private static Document SOAPMessageToDOMDocument(SOAPMessage msg) throws Exception {
-
-        // SOAPPart implements org.w3c.dom.Document interface
-        Document part = msg.getSOAPPart();
-
-        return part;
-    }
-
-    private static SOAPMessage DOMDocumentToSOAPMessage(Document doc) throws Exception {
-        SOAPMessage newMsg = null;
-
-        MessageFactory mf = MessageFactory.newInstance();
-        newMsg = mf.createMessage();
-        SOAPPart soapPart = newMsg.getSOAPPart();
-        soapPart.setContent(new DOMSource(doc));
-
-        return newMsg;
-    }
 }
