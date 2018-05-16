@@ -23,7 +23,7 @@
         </handler>
 
         <handler>
-            <handler-class>example.ws.handler.KerberosServerHandler</handler-class>
+            <handler-class>handlers.KerberosServerHandler</handler-class>
         </handler>
 
 

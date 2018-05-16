@@ -1,25 +1,12 @@
 package org.binas.ws.cli;
 
-import static example.ws.handler.KerberosClientHandler.TICKET_ELEMENT_NAME;
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.soap.Name;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeaderElement;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.BindingProvider;
 
-import example.ws.handler.KerberosClientHandler;
 import org.binas.ws.AlreadyHasBina_Exception;
 import org.binas.ws.BadInit_Exception;
 import org.binas.ws.BinasPortType;
@@ -36,7 +23,6 @@ import org.binas.ws.StationView;
 import org.binas.ws.UserNotExists_Exception;
 import org.binas.ws.UserView;
 
-import org.w3c.dom.Node;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 

@@ -1,8 +1,7 @@
-package example.ws.handler;
+package handlers;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import pt.ulisboa.tecnico.sdis.kerby.*;
@@ -17,7 +16,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -33,7 +31,9 @@ import java.util.Set;
  *  and creates a KerbyClient to authenticate with the kerby server in RNL
  */
 public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
-    public static final String VALID_SERVER_PASSWORD = "nhdchdps";
+    private static final String VALID_SERVER_PASSWORD = "nhdchdps";
+    private static final String TICKET_ELEMENT_NAME = "ticket";
+    private static final String AUTH_ELEMENT_NAME = "auth";
 
     private CipheredView cipheredTicketView;
     private CipheredView cipheredAuthView;
@@ -141,12 +141,12 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
                 return true;
             }
 
-            Name ticketName = se.createName(KerberosClientHandler.TICKET_ELEMENT_NAME);
+            Name ticketName = se.createName(TICKET_ELEMENT_NAME);
 
             Iterator it = sh.getChildElements();
             // check header element
             if (!it.hasNext()) {
-                System.out.printf("Header element %s not found.%n", KerberosClientHandler.TICKET_ELEMENT_NAME);
+                System.out.printf("Header element %s not found.%n", TICKET_ELEMENT_NAME);
                 return true;
             }
 
