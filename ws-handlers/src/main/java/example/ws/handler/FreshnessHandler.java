@@ -5,9 +5,12 @@ import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
@@ -58,8 +61,68 @@ public class FreshnessHandler implements SOAPHandler<SOAPMessageContext> {
 		return true;
 	}
 
+	private boolean validToken(String path, String token) {
+		try{
+			FileInputStream is = new FileInputStream(path);
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.defaultCharset())); //is it?
+			String line;
+			while((line = reader.readLine()) != null){
+				if(line.trim().equals(token)){
+					System.out.println("Rejecting... Token found!");
+					return false;
+				}
+			}
+			reader.close();
+			is.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			//TODO
+			//create file
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("Error reading file. ");
+		}
+		return true;
+	}
+
+	private void addToken(String path, String token) {
+		try{
+			BufferedWriter output = new BufferedWriter(new FileWriter(path, true));
+			output.append(token);
+			output.newLine();
+			output.close();
+		} catch (IOException e) {
+			System.out.println("Error writing file. ");
+		}
+	}
+
+
 	private boolean handleInbound(SOAPMessageContext smc) {
-		return false;
+		try{
+			SOAPEnvelope env = smc.getMessage().getSOAPPart().getEnvelope();
+			SOAPHeader sh = getHeader(env);
+			Name name = env.createName("token", "nsID", "uri:token");
+			Iterator it = sh.getChildElements(name);
+			if(!it.hasNext()) return true;
+
+			SOAPElement el = (SOAPElement) it.next();
+			String token = el.getValue();
+
+			String path = "target/tokens.tsv";
+			if(!validToken(path, token)){
+				System.out.println("Freshness Handler: Invalid token. Rejecting message.");
+				return false;
+			}
+
+			addToken(path, token);
+
+			//TODO CONTEXT_PROPERTU
+
+		} catch (SOAPException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	@Override
