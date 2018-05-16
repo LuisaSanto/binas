@@ -1,4 +1,4 @@
-package example.ws.handler;
+package handlers;
 
 import org.binas.ws.cli.BinasClient;
 import org.w3c.dom.Node;
@@ -11,6 +11,7 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -38,8 +39,8 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
     private static SecureRandom randomGenerator = new SecureRandom();
     private static final int VALID_DURATION = 30;
 
-    public static final String TICKET_ELEMENT_NAME = "ticket";
-    public static final String AUTH_ELEMENT_NAME = "auth";
+    private static final String TICKET_ELEMENT_NAME = "ticket";
+    private static final String AUTH_ELEMENT_NAME = "auth";
 
 
     private static final String VALID_SERVER_NAME = "binas@A58.binas.org";
@@ -70,6 +71,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
         if(outbound){
             // garantir que esta autenticado ao kerby e o limite de validade do ticket nao foi ultrapassado
             if(!isTicketValid()){
+                System.out.println("requesting new ticket and session key");
                 requestNewTicketAndSessionKey();
             }
 
@@ -117,6 +119,13 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             // 1. authenticate user and get ticket and session key by requesting a ticket to kerby
             SessionKeyAndTicketView sessionKeyAndTicketView = kerbyClient.requestTicket(VALID_CLIENT_NAME, VALID_SERVER_NAME, nounce, VALID_DURATION);
 
+            // add to BinasClient TicketCollection
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND, VALID_DURATION);
+            long finalValidTime = calendar.getTimeInMillis();
+            BinasClient.ticketCollection.storeTicket(VALID_SERVER_NAME, sessionKeyAndTicketView, finalValidTime );
+            System.out.println("added ticket to ticketCollection , ticket != null? : " + (BinasClient.ticketCollection.getTicket(VALID_SERVER_NAME) != null));
+
             // 2. generate a key from alice's password, to decipher and retrieve the session key with the Kc (client key)
             Key aliceKey = SecurityHelper.generateKeyFromPassword(BinasClient.VALID_CLIENT_PASSWORD);
 
@@ -131,6 +140,8 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             Auth authToBeCiphered = new Auth(VALID_CLIENT_NAME, new Date());
             // cipher the auth with the session key Kcs
             auth = authToBeCiphered.cipher(kcsSessionKey);
+
+            System.out.println("requested new ticket and session key");
 
             // TODO contexto resposta do KerberosServerHandler
 

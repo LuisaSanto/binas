@@ -16,7 +16,7 @@
 
 
         <handler>
-            <handler-class>example.ws.handler.KerberosClientHandler</handler-class>
+            <handler-class>handlers.KerberosClientHandler</handler-class>
         </handler>
 
         <handler>

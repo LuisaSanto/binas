@@ -16,7 +16,7 @@ import java.util.Set;
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
 /**
- * This SOAPHandler outputs the endpoint address of messages, if available.
+ *
  */
 public class FreshnessHandler implements SOAPHandler<SOAPMessageContext> {
 
