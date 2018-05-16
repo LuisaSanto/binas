@@ -1,10 +1,10 @@
 package org.binas.ws;
 
+import org.binas.domain.BinasManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import org.binas.domain.BinasManager;
 
 /**
  * BinasApp

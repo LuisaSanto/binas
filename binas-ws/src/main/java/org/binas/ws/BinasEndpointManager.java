@@ -1,10 +1,9 @@
 package org.binas.ws;
 
-import java.io.IOException;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 import javax.xml.ws.Endpoint;
-
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import java.io.IOException;
 
 /** End point manager */
 public class BinasEndpointManager {

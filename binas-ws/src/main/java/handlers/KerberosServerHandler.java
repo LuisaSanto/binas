@@ -57,25 +57,24 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
 
         if(outbound)
-            handleOutboundMessage(smc);
+            return handleOutboundMessage(smc);
         else
-            handleInboundMessage(smc);
+            return handleInboundMessage(smc);
 
-        return true;
     }
 
 
 
     /** Handles outbound messages */
     private boolean handleOutboundMessage(SOAPMessageContext smc){
-
+        // put {Treq}kcs, and response in the soap message
 
 
         return true;
     }
 
     /** Handles inbound messages */
-    private boolean handleInboundMessage(SOAPMessageContext smc){
+    private boolean handleInboundMessage(SOAPMessageContext smc) {
         // TODO BinasAuthorizationHandler
 
         retrieveTicketAndAuthFromMessageHeaders(smc);
@@ -86,6 +85,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             Ticket ticket = new Ticket(cipheredTicketView, serverKey);
 
             ticket.validate();
+
             System.out.println("ticket validated");
             Key sessionKey = ticket.getKeyXY();
 
@@ -111,7 +111,8 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             // TODO adicionar coisas contexto
 
         } catch(KerbyException e){
-            e.printStackTrace();
+            // Ticket is invalid! send back to client
+            throw new RuntimeException("InvalidTicket");
         } catch(NoSuchAlgorithmException e){
             e.printStackTrace();
         } catch(InvalidKeySpecException e){
