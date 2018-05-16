@@ -47,8 +47,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="module" module-name="station-ws-cli" scope="TEST" />
-    <orderEntry type="module" module-name="ws-handlers" />
-    <orderEntry type="library" name="Maven: pt.ulisboa.tecnico.sdis:kerby-ws-cli:1.0" level="project" />
-    <orderEntry type="library" name="Maven: pt.ulisboa.tecnico.sdis:kerby-lib:1.0" level="project" />
+    <orderEntry type="module" module-name="ws-handlers (1) (org.binas.A58)" />
+    <orderEntry type="module" module-name="kerby-ws-cli" />
+    <orderEntry type="module" module-name="kerby-lib" />
   </component>
 </module>
