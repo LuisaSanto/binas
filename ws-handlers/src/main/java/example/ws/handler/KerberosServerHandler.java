@@ -2,6 +2,8 @@ package example.ws.handler;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 
@@ -11,13 +13,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +29,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- *  This SOAP handler intecerpts the remote calls done by binas-ws-cli for authentication,
+ *  This SOAP handler intecepts the remote calls done by binas-ws-cli for authentication,
  *  and creates a KerbyClient to authenticate with the kerby server in RNL
  */
 public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
@@ -92,7 +94,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             // 2. Depois deve abrir o autenticador com a chave de sessão (Kcs) e validá-lo.
             Auth auth = new Auth(cipheredAuthView, sessionKey);
 
-            // 3 TODO verificar integridade atraves MACHandler
+            // 3 TODO verificar integridade atraves MACHandler onde!?
 
 
             // TODO validar request time
@@ -138,31 +140,31 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
             Name ticketName = se.createName(KerberosClientHandler.TICKET_ELEMENT_NAME);
 
-            sh.getChildElements();
-            Iterator it = sh.getChildElements(ticketName);
+            Iterator it = sh.getChildElements();
             // check header element
             if (!it.hasNext()) {
                 System.out.printf("Header element %s not found.%n", KerberosClientHandler.TICKET_ELEMENT_NAME);
                 return true;
             }
 
+
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
             // ----------------- TICKET ----------------------
+
             SOAPElement ticketSOAPElement = (SOAPElement) it.next();
+            Document ticketDocument = builder.parse(new InputSource(new StringReader(ticketSOAPElement.getValue())));
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-
-            // get ticket
-            Document ticketDocument = builder.parse(ticketSOAPElement.getValue());
             DOMSource ticketDOMSource = new DOMSource(ticketDocument);
             Node ticketNode = ticketDOMSource.getNode();
 
             cipheredTicketView = clerk.cipherFromXMLNode(ticketNode);
 
             // -----------------  AUTH  ----------------------
-            SOAPElement authSOAPElement = (SOAPElement) it.next();
 
-            Document authDocument = builder.parse(authSOAPElement.getValue());
+            SOAPElement authSOAPElement = (SOAPElement) it.next();
+            Document authDocument = builder.parse(new InputSource(new StringReader(authSOAPElement.getValue())));
+
             DOMSource authDOMSource = new DOMSource(authDocument);
             Node authNode = authDOMSource.getNode();
 
@@ -199,4 +201,25 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
         // nothing to clean up
     }
 
+
+    /** SOAP to DOM and DOM to SOAP methods */
+
+    private static Document SOAPMessageToDOMDocument(SOAPMessage msg) throws Exception {
+
+        // SOAPPart implements org.w3c.dom.Document interface
+        Document part = msg.getSOAPPart();
+
+        return part;
+    }
+
+    private static SOAPMessage DOMDocumentToSOAPMessage(Document doc) throws Exception {
+        SOAPMessage newMsg = null;
+
+        MessageFactory mf = MessageFactory.newInstance();
+        newMsg = mf.createMessage();
+        SOAPPart soapPart = newMsg.getSOAPPart();
+        soapPart.setContent(new DOMSource(doc));
+
+        return newMsg;
+    }
 }
