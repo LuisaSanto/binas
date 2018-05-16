@@ -49,7 +49,7 @@ public class FreshnessHandler implements SOAPHandler<SOAPMessageContext> {
 
 			SOAPEnvelope env = smc.getMessage().getSOAPPart().getEnvelope();
 			SOAPHeader sh = getHeader(env);
-			Name name = env.createName("token", "nsID", "uri:token");
+			Name name = env.createName("nouce", "nsID", "uri:nouce");
 			SOAPHeaderElement el = sh.addHeaderElement(name);
 			el.addTextNode(printBase64Binary(array));
 
@@ -61,15 +61,15 @@ public class FreshnessHandler implements SOAPHandler<SOAPMessageContext> {
 		return true;
 	}
 
-	private boolean validToken(String path, String token) {
+	private boolean validNouce(String path, String nouce) {
 		try{
 			FileInputStream is = new FileInputStream(path);
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.defaultCharset())); //is it?
 			String line;
 			while((line = reader.readLine()) != null){
-				if(line.trim().equals(token)){
-					System.out.println("Rejecting... Token found!");
+				if(line.trim().equals(nouce)){
+					System.out.println("Rejecting... nouce found!");
 					return false;
 				}
 			}
@@ -86,10 +86,10 @@ public class FreshnessHandler implements SOAPHandler<SOAPMessageContext> {
 		return true;
 	}
 
-	private void addToken(String path, String token) {
+	private void addNouce(String path, String nouce) {
 		try{
 			BufferedWriter output = new BufferedWriter(new FileWriter(path, true));
-			output.append(token);
+			output.append(nouce);
 			output.newLine();
 			output.close();
 		} catch (IOException e) {
@@ -102,22 +102,26 @@ public class FreshnessHandler implements SOAPHandler<SOAPMessageContext> {
 		try{
 			SOAPEnvelope env = smc.getMessage().getSOAPPart().getEnvelope();
 			SOAPHeader sh = getHeader(env);
-			Name name = env.createName("token", "nsID", "uri:token");
+			Name name = env.createName("nouce", "nsID", "uri:nouce");
 			Iterator it = sh.getChildElements(name);
 			if(!it.hasNext()) return true;
 
 			SOAPElement el = (SOAPElement) it.next();
-			String token = el.getValue();
+			String nouce = el.getValue();
 
-			String path = "target/tokens.tsv";
-			if(!validToken(path, token)){
-				System.out.println("Freshness Handler: Invalid token. Rejecting message.");
+			String path = "target/nouces.tsv";
+			if(!validNouce(path, nouce)){
+				System.out.println("Freshness Handler: Invalid nouce. Rejecting message.");
 				return false;
 			}
 
-			addToken(path, token);
+			addNouce(path, nouce);
 
-			//TODO CONTEXT_PROPERTU
+			// Put header in a property context
+			String CONTEXT_PROPERTY = "nouce.property";
+			smc.put(CONTEXT_PROPERTY, nouce);
+			// Set property scope to application client/server class can access it
+			smc.setScope(CONTEXT_PROPERTY, MessageContext.Scope.APPLICATION);
 
 		} catch (SOAPException e) {
 			e.printStackTrace();
