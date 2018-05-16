@@ -108,19 +108,6 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
 
 
-
-            // ----------------- DEBUG ---------------
-            /*
-            String ticketData = new String(ticket.getData());
-            Name ticketName = se.createName(TICKET_ELEMENT_NAME, "ns1" ,"urn:ticket");
-            SOAPElement element = sh.addChildElement(ticketName);
-            element.addTextNode(ticketData);
-
-
-            transformer.transform(new DOMSource(sh), new StreamResult(sw));
-            System.out.println("Just the header transformed :" + sw.toString());
-            */
-
             // ----------------- TICKET ----------------------
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
