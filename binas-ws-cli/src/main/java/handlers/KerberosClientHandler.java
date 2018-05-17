@@ -47,7 +47,6 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
     private static CipheredView ticket;
     private static CipheredView auth;
-    private static Key kcsSessionKey;
 
 
     /**
@@ -97,8 +96,8 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
         try{
             Key clientKey = SecurityHelper.generateKeyFromPassword(BinasClient.VALID_CLIENT_PASSWORD);
-            kcsSessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), clientKey).getKeyXY();
-            auth = new Auth(BinasClient.VALID_CLIENT_NAME, new Date()).cipher(kcsSessionKey);
+            BinasClient.kcsSessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), clientKey).getKeyXY();
+            auth = new Auth(BinasClient.VALID_CLIENT_NAME, new Date()).cipher(BinasClient.kcsSessionKey);
 
         } catch(NoSuchAlgorithmException e){
             e.printStackTrace();
@@ -132,7 +131,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
             // NOTE: SessionKey : {Kc.s , n}Kc
             // to get the actual session key, we call getKeyXY
-            kcsSessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), aliceKey).getKeyXY();
+            BinasClient.kcsSessionKey = new SessionKey(sessionKeyAndTicketView.getSessionKey(), aliceKey).getKeyXY();
 
             // 3. save ticket for server
             ticket = sessionKeyAndTicketView.getTicket();
@@ -140,7 +139,7 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
             // 4. create authenticator (Auth)
             Auth authToBeCiphered = new Auth(VALID_CLIENT_NAME, new Date());
             // cipher the auth with the session key Kcs
-            auth = authToBeCiphered.cipher(kcsSessionKey);
+            auth = authToBeCiphered.cipher(BinasClient.kcsSessionKey);
 
             System.out.println("requested new ticket and session key");
 

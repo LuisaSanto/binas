@@ -64,7 +64,6 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
 
-
     /** Handles outbound messages */
     private boolean handleOutboundMessage(SOAPMessageContext smc){
         // put {Treq}kcs, and response in the soap message
@@ -97,18 +96,12 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             auth.validate();
             System.out.println("auth validated");
 
-            // 3 TODO verificar integridade atraves MACHandler onde!?
-
 
             // TODO validar request time
             // 4. O servidor responde ao cliente com uma instância da classe RequestTime (da kerby-lib).
             // responde com {Treq}Kc,s   response
             RequestTime requestTime = new RequestTime(new Date());
             requestTime.cipher(sessionKey); // cipher with session key Kc,s
-
-            // TODO efetuar operacao pedida pelo cliente no Binas
-
-            // TODO adicionar coisas contexto
 
         } catch(KerbyException e){
             // Ticket is invalid! send back to client

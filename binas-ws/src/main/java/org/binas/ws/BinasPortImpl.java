@@ -12,6 +12,7 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,12 @@ import java.util.List;
         serviceName = "BinasService"
 )
 public class BinasPortImpl implements BinasPortType {
+
+    public static Key kcsSessionKey;
+
+    public BinasPortImpl(){
+
+    }
 	
 	// end point manager
 	private BinasEndpointManager endpointManager;
