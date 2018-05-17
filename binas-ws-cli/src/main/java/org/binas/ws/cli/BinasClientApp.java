@@ -1,6 +1,5 @@
 package org.binas.ws.cli;
 
-import java.util.List;
 
 
 /**

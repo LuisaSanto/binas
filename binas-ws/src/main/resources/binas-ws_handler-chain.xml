@@ -17,11 +17,11 @@
     <handler-chain>
 
         <handler>
-            <handler-class>handlers.KerberosServerHandler</handler-class>
+            <handler-class>example.ws.handler.MACHandler</handler-class>
         </handler>
 
         <handler>
-            <handler-class>handlers.MACServerHandler</handler-class>
+            <handler-class>handlers.KerberosServerHandler</handler-class>
         </handler>
 
         <handler>
