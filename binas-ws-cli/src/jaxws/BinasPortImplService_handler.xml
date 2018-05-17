@@ -21,7 +21,7 @@
         </handler>
 
         <handler>
-            <handler-class>handlers.MACClientHandler</handler-class>
+            <handler-class>example.ws.handler.MACHandler</handler-class>
         </handler>
 
         <handler>

@@ -1,11 +1,14 @@
 package handlers;
 
+import example.ws.handler.MACHandler;
+import org.binas.ws.BinasPortImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 
+import javax.crypto.SecretKey;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -86,13 +89,14 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             ticket.validate();
 
             System.out.println("ticket validated");
-            Key sessionKey = ticket.getKeyXY();
+            BinasPortImpl.kcsSessionKey = ticket.getKeyXY();
+            MACHandler.sessionKey = (SecretKey) BinasPortImpl.kcsSessionKey;
 
             // Authxy = {x, Treq}Kxy
             // so: Authcs = {c, Treq}Kcs  - ciphered with the session key between client and server
 
             // 2. Depois deve abrir o autenticador com a chave de sessão (Kcs) e validá-lo.
-            Auth auth = new Auth(cipheredAuthView, sessionKey);
+            Auth auth = new Auth(cipheredAuthView, BinasPortImpl.kcsSessionKey);
             auth.validate();
             System.out.println("auth validated");
 
@@ -101,7 +105,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
             // 4. O servidor responde ao cliente com uma instância da classe RequestTime (da kerby-lib).
             // responde com {Treq}Kc,s   response
             RequestTime requestTime = new RequestTime(new Date());
-            requestTime.cipher(sessionKey); // cipher with session key Kc,s
+            requestTime.cipher(BinasPortImpl.kcsSessionKey); // cipher with session key Kc,s
 
         } catch(KerbyException e){
             // Ticket is invalid! send back to client
