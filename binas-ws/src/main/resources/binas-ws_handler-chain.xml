@@ -15,17 +15,18 @@
          to log the message at the beginning and at the end of the chain.
     -->
     <handler-chain>
-        <!--
-             Print the SOAP message with added indentation for easier reading.
-         -->
-        <handler>
-            <handler-class>example.ws.handler.PrettyLogHandler</handler-class>
-        </handler>
 
         <handler>
             <handler-class>handlers.KerberosServerHandler</handler-class>
         </handler>
 
+        <handler>
+            <handler-class>handlers.MACServerHandler</handler-class>
+        </handler>
+
+        <handler>
+            <handler-class>example.ws.handler.PrettyLogHandler</handler-class>
+        </handler>
 
     </handler-chain>
 </handler-chains>

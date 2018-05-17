@@ -2,6 +2,7 @@ package org.binas.ws.cli;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
+import java.security.Key;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ public class BinasClient implements BinasPortType {
 
     public static final String VALID_CLIENT_NAME = "alice@A58.binas.org";
     public static final String VALID_CLIENT_PASSWORD = "r6p67xdOV";
+    public static Key kcsSessionKey;
 
     /** WS service */
     BinasService service = null;

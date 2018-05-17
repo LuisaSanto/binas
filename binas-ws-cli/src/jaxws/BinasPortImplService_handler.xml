@@ -15,8 +15,13 @@
 	<handler-chain>
 
 
+
         <handler>
             <handler-class>handlers.KerberosClientHandler</handler-class>
+        </handler>
+
+        <handler>
+            <handler-class>handlers.MACClientHandler</handler-class>
         </handler>
 
         <handler>
