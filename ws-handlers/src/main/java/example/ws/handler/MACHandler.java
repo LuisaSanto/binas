@@ -218,32 +218,6 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
         return cipherDigest;
     }
 
-    /**
-     * Calculates new digest from text and compare it to the to deciphered
-     * digest.
-     */
-    private static boolean verifyMAC(byte[] cipherDigest, byte[] bytes, SecretKey key) throws Exception {
-
-        Mac cipher = Mac.getInstance(MAC_ALGO);
-        cipher.init(key);
-        byte[] cipheredBytes = cipher.doFinal(bytes);
-        return Arrays.equals(cipherDigest, cipheredBytes);
-    }
-
-    private boolean equalByteArrays(byte[] a1, byte[] a2){
-        if(a1.length != a2.length){
-            System.out.println("diferent length");
-            return false;
-        }
-
-        for(int i = 0; i < a1.length; i++){
-            System.out.println(a1[i] + " == " + a2[i]);
-            if(a1[i] != a2[i]){
-                return false;
-            }
-        }
-        return true;
-    }
 
     /** The handleFault method is invoked for fault message processing. */
     @Override

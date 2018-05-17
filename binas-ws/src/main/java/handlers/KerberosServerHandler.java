@@ -22,9 +22,6 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -69,22 +66,17 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
     /** Handles outbound messages */
     private boolean handleOutboundMessage(SOAPMessageContext smc){
-        // put {Treq}kcs, and response in the soap message
-
-
         return true;
     }
 
     /** Handles inbound messages */
     private boolean handleInboundMessage(SOAPMessageContext smc) {
-        // TODO BinasAuthorizationHandler
-
         retrieveTicketAndAuthFromMessageHeaders(smc);
 
         try{
             // 1. O servidor abre o ticket com a sua chave (Ks) e deve validá-lo.
-            Key serverKey = SecurityHelper.generateKeyFromPassword(VALID_SERVER_PASSWORD);
-            Ticket ticket = new Ticket(cipheredTicketView, serverKey);
+            Ticket ticket = new Ticket(cipheredTicketView, BinasPortImpl.serverKey);
+            BinasAuthorizationHandler.userEmailInTicket = ticket.getX();
 
             ticket.validate();
 
@@ -97,23 +89,15 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
             // 2. Depois deve abrir o autenticador com a chave de sessão (Kcs) e validá-lo.
             Auth auth = new Auth(cipheredAuthView, BinasPortImpl.kcsSessionKey);
+            BinasAuthorizationHandler.userEmailInAuth = auth.getX();
             auth.validate();
             System.out.println("auth validated");
 
 
-            // TODO validar request time
-            // 4. O servidor responde ao cliente com uma instância da classe RequestTime (da kerby-lib).
-            // responde com {Treq}Kc,s   response
-            RequestTime requestTime = new RequestTime(new Date());
-            requestTime.cipher(BinasPortImpl.kcsSessionKey); // cipher with session key Kc,s
 
         } catch(KerbyException e){
             // Ticket is invalid! send back to client
             throw new RuntimeException("InvalidTicket");
-        } catch(NoSuchAlgorithmException e){
-            e.printStackTrace();
-        } catch(InvalidKeySpecException e){
-            e.printStackTrace();
         }
 
 

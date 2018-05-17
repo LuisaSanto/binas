@@ -7,12 +7,15 @@ import org.binas.domain.exception.*;
 import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
+import pt.ulisboa.tecnico.sdis.kerby.SecurityHelper;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,19 +30,32 @@ import java.util.List;
         serviceName = "BinasService"
 )
 public class BinasPortImpl implements BinasPortType {
-
+    private static final String VALID_SERVER_PASSWORD = "nhdchdps";
     public static Key kcsSessionKey;
+    public static Key serverKey;
 
     public BinasPortImpl(){
-
+        serverKey = generateServerKeyFromPassword();
     }
 	
 	// end point manager
 	private BinasEndpointManager endpointManager;
 
 	public BinasPortImpl(BinasEndpointManager endpointManager) {
+	    serverKey = generateServerKeyFromPassword();
 		this.endpointManager = endpointManager;
 	}
+
+	private Key generateServerKeyFromPassword(){
+        try{
+            return SecurityHelper.generateKeyFromPassword(VALID_SERVER_PASSWORD);
+        } catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+        } catch(InvalidKeySpecException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 	@Override
 	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception {
