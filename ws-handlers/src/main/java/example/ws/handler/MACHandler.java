@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
+import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
 /**
@@ -87,6 +88,18 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
         return true;
     }
 
+    private byte[] generateBodyDigestFromSOAPBody(SOAPBody soapBody) throws Exception{
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        StringWriter sw = new StringWriter();
+
+        // transform the body into a byte[] we can digest
+        transformer.transform(new DOMSource(soapBody), new StreamResult(sw));
+        byte[] bytesToDigest = sw.toString().getBytes();
+
+        return makeMAC(bytesToDigest, sessionKey);
+    }
+
     private boolean handleOutboundMessage(SOAPMessageContext smc) throws Exception{
 
         // get soap envelope
@@ -118,7 +131,7 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
         // add header element value
         element.addTextNode(digestString);
 
-        System.out.println("########## Added digest string: " + digestString);
+        //System.out.println("########## Added digest string: " + digestString);
 
         return true;
     }
@@ -146,19 +159,30 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
             return true;
         }
 
+        // find the digest header element
         SOAPElement digestSOAPElement = null;
         while(it.hasNext()){
             SOAPElement element = (SOAPElement) it.next();
             if(element.getLocalName().equals(DIGEST_ELEMENT_NAME)){
                 digestSOAPElement = element;
-                System.out.println("############# FOUND DIGEST");
+               // System.out.println("############# FOUND DIGEST");
                 break;
             }
         }
 
-        String digestString = digestSOAPElement.getValue();
 
-        System.out.println("########### Obtained digest string " + digestString);
+        // convert digest into byte[]
+        String digestString = digestSOAPElement.getValue();
+        byte[] digest = parseBase64Binary(digestString);
+        //System.out.println("########### Obtained digest string " + digestString);
+
+        // generate a new digest from the body of the SOAP message
+        byte[] newDigest = generateBodyDigestFromSOAPBody(se.getBody());
+
+        // check if digests are equal to verify integrity of the message
+        if(!Arrays.equals(digest, newDigest)){
+            throw new RuntimeException("Detected SOAP Message modifications, integrity of message was not verified");
+        }
 
         return true;
 
