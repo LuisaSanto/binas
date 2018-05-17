@@ -1,26 +1,22 @@
 package example.ws.handler;
 
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-
-import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.*;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import java.io.StringReader;
 import java.io.StringWriter;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
@@ -41,6 +37,8 @@ import static javax.xml.bind.DatatypeConverter.printBase64Binary;
  *
  */
 public class MACHandler implements SOAPHandler<SOAPMessageContext> {
+    private static boolean ARE_INTEGRITY_CHECKS_DISABLED = false;
+
     public static SecretKey sessionKey;
 
     /** Digest algorithm. */
@@ -80,7 +78,13 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
                 handleOutboundMessage(smc);
             else
                 handleInboundMessage(smc);
-        } catch(Exception e){
+        } catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+        } catch(SOAPException e){
+            e.printStackTrace();
+        } catch(InvalidKeyException e){
+            e.printStackTrace();
+        } catch(TransformerException e){
             e.printStackTrace();
         }
 
@@ -88,19 +92,31 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
         return true;
     }
 
-    private byte[] generateBodyDigestFromSOAPBody(SOAPBody soapBody) throws Exception{
+    private byte[] generateBodyDigestFromSOAPBody(SOAPBody soapBody) {
 
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        StringWriter sw = new StringWriter();
+        try{
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
 
-        // transform the body into a byte[] we can digest
-        transformer.transform(new DOMSource(soapBody), new StreamResult(sw));
-        byte[] bytesToDigest = sw.toString().getBytes();
+            StringWriter sw = new StringWriter();
 
-        return makeMAC(bytesToDigest, sessionKey);
+            // transform the body into a byte[] we can digest
+            transformer.transform(new DOMSource(soapBody), new StreamResult(sw));
+            byte[] bytesToDigest = sw.toString().getBytes();
+
+            return makeMAC(bytesToDigest, sessionKey);
+        } catch(TransformerConfigurationException e){
+            e.printStackTrace();
+        } catch(TransformerException e){
+            e.printStackTrace();
+        } catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+        } catch(InvalidKeyException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    private boolean handleOutboundMessage(SOAPMessageContext smc) throws Exception{
+    private boolean handleOutboundMessage(SOAPMessageContext smc) throws TransformerException, SOAPException, InvalidKeyException, NoSuchAlgorithmException{
 
         // get soap envelope
         SOAPMessage msg = smc.getMessage();
@@ -133,10 +149,15 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
 
         //System.out.println("########## Added digest string: " + digestString);
 
+        // in case we want to test integrity and make it fail, force text content of the message to be garbage
+        if(ARE_INTEGRITY_CHECKS_DISABLED){
+            setSOAPMessageBodyTextContent(smc, "Hot Singles in your Area!");
+        }
+
         return true;
     }
 
-    private boolean handleInboundMessage(SOAPMessageContext smc) throws Exception{
+    private boolean handleInboundMessage(SOAPMessageContext smc) throws SOAPException{
         // get soap envelope
         SOAPMessage msg = smc.getMessage();
         SOAPPart sp = msg.getSOAPPart();
@@ -170,7 +191,6 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
             }
         }
 
-
         // convert digest into byte[]
         String digestString = digestSOAPElement.getValue();
         byte[] digest = parseBase64Binary(digestString);
@@ -188,11 +208,8 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
 
     }
 
-
-
-
     /** Makes a message authentication code. */
-    private static byte[] makeMAC(byte[] bytes, SecretKey key) throws Exception {
+    private static byte[] makeMAC(byte[] bytes, SecretKey key) throws NoSuchAlgorithmException, InvalidKeyException{
 
         Mac cipher = Mac.getInstance(MAC_ALGO);
         cipher.init(key);
@@ -242,6 +259,29 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
     @Override
     public void close(MessageContext messageContext) {
         // nothing to clean up
+    }
+
+    /**
+     * Change the content of the SOAP message body, primarily used to demonstrate integrity check
+     */
+    public void setSOAPMessageBodyTextContent(SOAPMessageContext smc, String text) throws SOAPException{
+        // get soap envelope
+        SOAPMessage msg = smc.getMessage();
+        SOAPPart sp = msg.getSOAPPart();
+        SOAPEnvelope se = sp.getEnvelope();
+        SOAPBody sb = se.getBody();
+
+        Name extraName = se.createName("extra", "ns1", "urn:extra");
+        SOAPBodyElement extraElement = sb.addBodyElement(extraName);
+        extraElement.addTextNode(text);
+    }
+
+    public static void disableIntegrityChecks(){
+        ARE_INTEGRITY_CHECKS_DISABLED = true;
+    }
+
+    public static void enableIntegrityChecks(){
+        ARE_INTEGRITY_CHECKS_DISABLED = false;
     }
 
 }
