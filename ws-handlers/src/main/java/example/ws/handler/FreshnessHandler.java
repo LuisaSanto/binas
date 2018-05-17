@@ -53,6 +53,8 @@ public class FreshnessHandler implements SOAPHandler<SOAPMessageContext> {
 			SOAPHeaderElement el = sh.addHeaderElement(name);
 			el.addTextNode(printBase64Binary(array));
 
+
+
 		} catch (NoSuchAlgorithmException e) {
 			System.out.println("SecureRandom algorithm does not exist" + e.getMessage());
 		} catch (SOAPException e) {
