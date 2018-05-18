@@ -23,7 +23,7 @@ public class BinasAuthorizationIT extends BaseIT  {
     public void successActivateUser() throws EmailExists_Exception, InvalidEmail_Exception{
         client.activateUser("alice@A58.binas.org");
     }
-
+/*
     @Test
     public void setCreditOfMe() throws UserNotExists_Exception, EmailExists_Exception, InvalidEmail_Exception{
         client.activateUser("alice@A58.binas.org");
@@ -41,4 +41,5 @@ public class BinasAuthorizationIT extends BaseIT  {
     public void tearDown() {
         client.testClear();
     }
+    */
 }
