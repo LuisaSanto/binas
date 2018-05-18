@@ -2,7 +2,6 @@ package org.binas.ws.it;
 
 
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
-import org.binas.ws.BadInit_Exception;
 import org.binas.ws.EmailExists_Exception;
 import org.binas.ws.InvalidEmail_Exception;
 import org.binas.ws.UserNotExists_Exception;

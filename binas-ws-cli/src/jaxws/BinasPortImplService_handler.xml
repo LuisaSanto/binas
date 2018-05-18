@@ -18,12 +18,16 @@
         <handler>
             <handler-class>example.ws.handler.PrettyLogHandler</handler-class>
         </handler>
+
+        <!--
         <handler>
             <handler-class>example.ws.handler.TimeHandler</handler-class>
         </handler>
         <handler>
             <handler-class>example.ws.handler.FreshnessHandler</handler-class>
         </handler>
+        -->
+
         <handler>
             <handler-class>handlers.KerberosClientHandler</handler-class>
         </handler>
